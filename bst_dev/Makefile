@@ -1,6 +1,6 @@
 APPLICATION = bst_device
 BOARD ?= native
-RIOTBASE ?= $(CURDIR)/../../RIOT
+RIOTBASE ?= $(CURDIR)/../RIOT
 
 DEVELHELP ?= 1
 QUIET ?= 1
