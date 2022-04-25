@@ -2,6 +2,14 @@
     "files.associations": {
         "Makefile": "makefile",
         "net_info.h": "c",
-        "stdio.h": "c"
-    }
+        "stdio.h": "c",
+        "msg.h": "c",
+        "shell.h": "c",
+        "ipv6.h": "c",
+        "inttypes.h": "c",
+        "hdr.h": "c",
+        "netif.h": "c",
+        "string.h": "c"
+    },
+    "cmake.configureOnOpen": false
 }
