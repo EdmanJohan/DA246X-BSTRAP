@@ -13,12 +13,13 @@ countdown() {
   echo
 }
 
-while getopts b:a:c:: flag
+while getopts b:a:c:t:: flag
 do
     case "${flag}" in
         b) board=${OPTARG};;
         a) application=${OPTARG};;
         c) clean=${OPTARG};;
+        t) terminal=${OPTARG};;
     esac
 done
 
@@ -72,17 +73,19 @@ else
     BOARD=$board make clean all flash -C $application PORT=$port -j$NPROC
 fi
 
-while true; do
-    echo ""
-    read -p "Open terminal? " yn
-    case $yn in
-        [Yy]* ) terminal=yes; break;;
-        [Nn]* ) exit;;
-        * ) echo "Please answer yes or no.";;
-    esac
-done
+if [ "$terminal" != "yes" ] || [ "$terminal" != "true" ]; then
+    while true; do
+        echo ""
+        read -p "Open terminal? " yn
+        case $yn in
+            [Yy]* ) terminal=yes; break;;
+            [Nn]* ) exit;;
+            * ) echo "Please answer yes or no.";;
+        esac
+    done
+fi
 
-if [ "$terminal" == yes ]; then
+if [ "$terminal" == "yes" ]; then
     if [ "$board" == "avr-rss2" ]; then
         if [ "$application" == "bst_gw" ]; then
             minicom ttyUSB0
