@@ -21,6 +21,10 @@
 static gnrc_netreg_entry_t server = GNRC_NETREG_ENTRY_INIT_PID(GNRC_NETREG_DEMUX_CTX_ALL,
                                                                KERNEL_PID_UNDEF);
 
+static void start_announce(void)
+{
+}
+
 static void start_server(void)
 {
     uint16_t port = 9200;
