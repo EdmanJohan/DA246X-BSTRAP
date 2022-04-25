@@ -1,5 +1,6 @@
 #!/bin/bash
 port=""
+NPROC=$(echo "$(nproc)/2" | bc)
 
 countdown() {
   secs=5
@@ -66,9 +67,9 @@ if [ -z "$clean" ] || [ "$clean" == "false" ]; then
         countdown;
     fi
 
-    BOARD=$board make all flash -C $application PORT=$port
+    BOARD=$board make all flash -C $application PORT=$port -j$NPROC
 else
-    BOARD=$board make clean all flash -C $application PORT=$port
+    BOARD=$board make clean all flash -C $application PORT=$port -j$NPROC
 fi
 
 while true; do
