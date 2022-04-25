@@ -25,13 +25,13 @@ done
 
 
 if [ -z "$board" ] || [ -z "$application" ]; then
-    echo "Usage: ./flash_term.sh -b [native|avr-rss2] -a [bst_dev|bst_gw]"
+    echo "Usage: ./flash_term.sh -b [native|avr-rss2] -a [bst_dev|bst_gw] [-c [true|false] -t [true|false]]"
     exit
 fi
 
 if [ "$board" != "native" ] && [ "$board" != "avr-rss2" ]; then
     echo "Error: Invalid board '$board'."
-    echo "Usage: ./flash_term.sh -b [native|avr-rss2] -a [bst_dev|bst_gw]"
+    echo "Usage: ./flash_term.sh -b [native|avr-rss2] -a [bst_dev|bst_gw] [-c [true|false] -t [true|false]]"
     exit
 else
     if [ "$board" == "native" ]; then
@@ -43,7 +43,7 @@ fi
 
 if [ "$application" != "bst_dev" ] && [ "$application" != "bst_gw" ]; then
     echo "Error: Invalid application '$application'."
-    echo "Usage: ./flash_term.sh -b [native|avr-rss2] -a [bst_dev|bst_gw]"
+    echo "Usage: ./flash_term.sh -b [native|avr-rss2] -a [bst_dev|bst_gw] [-c [true|false] -t [true|false]]"
     exit
 else
 
@@ -68,6 +68,7 @@ if [ -z "$clean" ] || [ "$clean" == "false" ]; then
         countdown;
     fi
 
+    echo "PORT=$port"
     BOARD=$board make all flash -C $application PORT=$port -j$NPROC
 else
     BOARD=$board make clean all flash -C $application PORT=$port -j$NPROC
@@ -93,7 +94,7 @@ if [ "$terminal" == "yes" ]; then
             minicom ttyUSB1
         fi
     elif [ "$board" == "native" ]; then
-        BOARD=$board make term -C $application
+        BOARD=$board make term -C $application PORT=$port
     else
         exit;
     fi
