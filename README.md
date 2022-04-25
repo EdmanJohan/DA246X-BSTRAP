@@ -17,5 +17,5 @@ make all flash term -C bst_gw PORT=tap0
 ```
 
 ```sh
-make all flash term -C bst_gw PORT=tap1
+make all flash term -C bst_dev PORT=tap1
 ```
