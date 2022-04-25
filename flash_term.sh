@@ -74,7 +74,7 @@ else
     BOARD=$board make clean all flash -C $application PORT=$port -j$NPROC
 fi
 
-if [ "$terminal" != "yes" ] || [ "$terminal" != "true" ]; then
+if [ "$terminal" != "yes" ] && [ "$terminal" != "true" ]; then
     while true; do
         echo ""
         read -p "Open terminal? " yn
@@ -86,7 +86,7 @@ if [ "$terminal" != "yes" ] || [ "$terminal" != "true" ]; then
     done
 fi
 
-if [ "$terminal" == "yes" ]; then
+if [ "$terminal" == "yes" ] || [ "$terminal" == "true" ]; then
     if [ "$board" == "avr-rss2" ]; then
         if [ "$application" == "bst_gw" ]; then
             minicom ttyUSB0
