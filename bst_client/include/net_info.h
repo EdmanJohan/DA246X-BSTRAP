@@ -1,3 +1,13 @@
+/**
+ * @file net_info.h
+ * @author Johan Edman (jedma@kth.se)
+ * @brief
+ * @version 0.1
+ * @date 2022-04-25
+ *
+ * @copyright Copyright (c) 2022
+ *
+ */
 
 #ifndef NET_INFO_H
 #define NET_INFO_H

@@ -11,13 +11,16 @@
 
 #include <stdio.h>
 #include "include/net_info.h"
+#include "include/bst_client.h"
 
 int main(void)
 {
-    puts("DA246X Bootstrapper | DEVICE");
+    puts("DA246X Bootstrapper | CLIENT");
 
     _print_hw_addr();
     _print_ip_addr();
+
+    bst_client();
 
     return 0;
 }

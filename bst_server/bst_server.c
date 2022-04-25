@@ -18,29 +18,44 @@
 
 #include "net/gnrc/pktdump.h"
 
+static uint16_t BST_PORT = 1119;
+static uint16_t SBST_PORT = 9119;
+
 static gnrc_netreg_entry_t server = GNRC_NETREG_ENTRY_INIT_PID(GNRC_NETREG_DEMUX_CTX_ALL,
                                                                KERNEL_PID_UNDEF);
-
-static void start_announce(void)
-{
-}
+static gnrc_netreg_entry_t server_secure = GNRC_NETREG_ENTRY_INIT_PID(GNRC_NETREG_DEMUX_CTX_ALL,
+                                                                      KERNEL_PID_UNDEF);
 
 static void start_server(void)
 {
-    uint16_t port = 9200;
-
-    if (server.target.pid != KERNEL_PID_UNDEF)
+    if (server.target.pid != KERNEL_PID_UNDEF || server_secure.target.pid != KERNEL_PID_UNDEF)
     {
-        printf("Error: server already running on port %" PRIu32 "\n", server.demux_ctx);
+        printf("Error: BST server already running on port %" PRIu16 " (%" PRIu32 ")\n", server.demux_ctx, server_secure.demux_ctx);
         return;
     }
 
     // TODO: Start server, register on chosen port
     server.target.pid = gnrc_pktdump_pid;
-    server.demux_ctx = (uint32_t)port;
-    gnrc_netreg_register(GNRC_NETTYPE_UDP, &server);
+    server.demux_ctx = (uint32_t)BST_PORT;
+    if (gnrc_netreg_register(GNRC_NETTYPE_UDP, &server) == 0)
+    {
+        printf("Success: started BST server on port %" PRIu16 "\n", BST_PORT);
+    }
+    else
+    {
+        printf("Error: Failed to start BST server on port %" PRIu16 "\n", BST_PORT);
+    }
 
-    printf("Success: started BST server on port %" PRIu16 "\n", port);
+    server_secure.target.pid = gnrc_pktdump_pid;
+    server_secure.demux_ctx = (uint32_t)SBST_PORT;
+    if (gnrc_netreg_register(GNRC_NETTYPE_UDP, &server_secure) == 0)
+    {
+        printf("Success: started BST(S) server on port %" PRIu16 "\n", SBST_PORT);
+    }
+    else
+    {
+        printf("Error: Failed to start BST(S) server on port %" PRIu16 "\n", SBST_PORT);
+    }
 }
 
 static void stop_server(void)
@@ -66,6 +81,8 @@ int bst_cmd(int argc, char **argv)
         printf("Usage: %s [start|stop]\n", argv[0]);
         return 1;
     }
+
+    // Modes: plain, encrypted
 
     if (strcmp(argv[1], "start") == 0)
     {

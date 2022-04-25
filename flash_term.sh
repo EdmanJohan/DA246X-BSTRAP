@@ -25,13 +25,13 @@ done
 
 
 if [ -z "$board" ] || [ -z "$application" ]; then
-    echo "Usage: ./flash_term.sh -b [native|avr-rss2] -a [bst_dev|bst_gw] [-c [true|false] -t [true|false]]"
+    echo "Usage: ./flash_term.sh -b [native|avr-rss2] -a [bst_client|bst_server] [-c [true|false] -t [true|false]]"
     exit
 fi
 
 if [ "$board" != "native" ] && [ "$board" != "avr-rss2" ]; then
     echo "Error: Invalid board '$board'."
-    echo "Usage: ./flash_term.sh -b [native|avr-rss2] -a [bst_dev|bst_gw] [-c [true|false] -t [true|false]]"
+    echo "Usage: ./flash_term.sh -b [native|avr-rss2] -a [bst_client|bst_server] [-c [true|false] -t [true|false]]"
     exit
 else
     if [ "$board" == "native" ]; then
@@ -41,19 +41,19 @@ else
     fi
 fi
 
-if [ "$application" != "bst_dev" ] && [ "$application" != "bst_gw" ]; then
+if [ "$application" != "bst_client" ] && [ "$application" != "bst_server" ]; then
     echo "Error: Invalid application '$application'."
-    echo "Usage: ./flash_term.sh -b [native|avr-rss2] -a [bst_dev|bst_gw] [-c [true|false] -t [true|false]]"
+    echo "Usage: ./flash_term.sh -b [native|avr-rss2] -a [bst_client|bst_server] [-c [true|false] -t [true|false]]"
     exit
 else
 
-    if [ "$application" == "bst_gw" ]; then
+    if [ "$application" == "bst_server" ]; then
         if [ "$port" == "tty" ]; then
             port="/dev/ttyUSB0"
         elif [ "$port" == "tap" ]; then
             port="tap0"
         fi
-    elif [ "$application" == "bst_dev" ]; then
+    elif [ "$application" == "bst_client" ]; then
         if [ "$port" == "tty" ]; then
             port="/dev/ttyUSB1"
         elif [ "$port" == "tap" ]; then
@@ -88,9 +88,9 @@ fi
 
 if [ "$terminal" == "yes" ] || [ "$terminal" == "true" ]; then
     if [ "$board" == "avr-rss2" ]; then
-        if [ "$application" == "bst_gw" ]; then
+        if [ "$application" == "bst_server" ]; then
             minicom ttyUSB0
-        elif [ "$application" == "bst_dev" ]; then
+        elif [ "$application" == "bst_client" ]; then
             minicom ttyUSB1
         fi
     elif [ "$board" == "native" ]; then

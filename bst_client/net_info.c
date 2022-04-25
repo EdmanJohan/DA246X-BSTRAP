@@ -1,3 +1,13 @@
+/**
+ * @file net_info.c
+ * @author Johan Edman (jedma@kth.se)
+ * @brief
+ * @version 0.1
+ * @date 2022-04-25
+ *
+ * @copyright Copyright (c) 2022
+ *
+ */
 #include "include/net_info.h"
 
 void _print_hw_addr(void)
