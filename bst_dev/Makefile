@@ -31,7 +31,9 @@ CFLAGS += -DCONFIG_GNRC_NETIF_IPV6_ADDRS_NUMOF=2 \
           -DGNRC_NETIF_IPV6_GROUPS_NUMOF=2 -DCONFIG_GNRC_IPV6_NIB_NUMOF=1 \
           -DCONFIG_GNRC_IPV6_NIB_OFFL_NUMOF=1
 
-CFLAGS += -DAVR_RSS2
+ifeq ($(BOARD),avr-rss2)
+    CFLAGS += -DAVR_RSS2
+endif
 
 # Enable/Disable to show compiler invocation lines
 QUIET ?= 1
