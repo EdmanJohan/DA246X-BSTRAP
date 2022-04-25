@@ -34,7 +34,7 @@ static void start_server(void)
         return;
     }
 
-    // TODO: Start server, register on chosen port
+    /* Start BST server, port BST_PORT */
     server.target.pid = gnrc_pktdump_pid;
     server.demux_ctx = (uint32_t)BST_PORT;
     if (gnrc_netreg_register(GNRC_NETTYPE_UDP, &server) == 0)
@@ -46,6 +46,7 @@ static void start_server(void)
         printf("Error: Failed to start BST server on port %" PRIu16 "\n", BST_PORT);
     }
 
+    /* Start BSTS server, port SBST_PORT */
     server_secure.target.pid = gnrc_pktdump_pid;
     server_secure.demux_ctx = (uint32_t)SBST_PORT;
     if (gnrc_netreg_register(GNRC_NETTYPE_UDP, &server_secure) == 0)
@@ -61,15 +62,19 @@ static void start_server(void)
 static void stop_server(void)
 {
     /* Check if BST Server is running */
-    if (server.target.pid == KERNEL_PID_UNDEF)
+    if (server.target.pid == KERNEL_PID_UNDEF && server_secure.target.pid == KERNEL_PID_UNDEF)
     {
-        puts("Error: Server was not running.");
+        printf("Error: BST server is not running.");
         return;
     }
 
     /* Stop BST Server */
     gnrc_netreg_unregister(GNRC_NETTYPE_UDP, &server);
     server.target.pid = KERNEL_PID_UNDEF;
+
+    gnrc_netreg_unregister(GNRC_NETTYPE_UDP, &server_secure);
+    server_secure.target.pid = KERNEL_PID_UNDEF;
+
     puts("Success: stopped BST server.");
 }
 

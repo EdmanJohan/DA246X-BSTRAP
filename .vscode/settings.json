@@ -9,7 +9,9 @@
         "inttypes.h": "c",
         "hdr.h": "c",
         "netif.h": "c",
-        "string.h": "c"
+        "string.h": "c",
+        "nettype.h": "c",
+        "udp.h": "c"
     },
     "cmake.configureOnOpen": false
 }

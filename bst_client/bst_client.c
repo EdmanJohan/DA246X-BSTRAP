@@ -24,6 +24,6 @@ int bst_client(void)
     {
         sock_udp_send(NULL, "Hello!", sizeof("Hello!"), &remote);
         puts("Sent message.");
-        xtimer_sleep(1);
+        xtimer_sleep(5);
     }
 }

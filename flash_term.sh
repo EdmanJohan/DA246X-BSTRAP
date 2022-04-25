@@ -62,13 +62,12 @@ else
     fi
 fi
 
-if [ -z "$clean" ] || [ "$clean" == "false" ]; then
-    echo "Compiling w. BOARD=$board, APP=$application, PORT=$port"
-    if [ "$board" == "avr-rss2" ]; then
-        countdown;
-    fi
+echo "Compiling w. BOARD=$board, APP=$application, PORT=$port"
+if [ "$board" == "avr-rss2" ]; then
+    countdown;
+fi
 
-    echo "PORT=$port"
+if [ -z "$clean" ] || [ "$clean" == "false" ]; then
     BOARD=$board make all flash -C $application PORT=$port -j$NPROC
 else
     BOARD=$board make clean all flash -C $application PORT=$port -j$NPROC
