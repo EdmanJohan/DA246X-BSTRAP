@@ -1,0 +1,6 @@
+# Machine-generated file - use setup menu in minicom to change parameters.
+pu port             /dev/ttyUSB0
+pu lock             /var/lock/ttyUSB0
+pu rtscts           No
+pu sound            No
+pu addcarreturn     Yes

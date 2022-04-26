@@ -15,8 +15,8 @@ done
 
 if [ $profiles == "yes" ]; then
     echo "Installing minicom profiles ..."
-    mv minirc.ttyUSB0 /home/$USER/.minirc.ttyUSB0
-    mv minirc.ttyUSB1 /home/$USER/.minirc.ttyUSB1
+    cp minirc.ttyUSB0 /home/$USER/.minirc.ttyUSB0
+    cp minirc.ttyUSB1 /home/$USER/.minirc.ttyUSB1
 fi
 
 echo "[GIT] Fetchin RIOT dependency ..."
