@@ -11,19 +11,80 @@
 
 #include "include/bst_client.h"
 
-static uint16_t BST_PORT = 1119;
-// static uint16_t SBST_PORT = 9119;
+#include "net/sock/tcp.h"
+#include "net/sock/udp.h"
+#include "net/sock/util.h"
 
-int bst_client(void)
-{
-    sock_udp_ep_t remote = {.family = AF_INET6};
-    remote.port = BST_PORT;
-    ipv6_addr_set_all_nodes_multicast((ipv6_addr_t *)&remote.addr.ipv6,
-                                      IPV6_ADDR_MCAST_SCP_LINK_LOCAL);
-    while (1)
-    {
-        sock_udp_send(NULL, "Hello!", sizeof("Hello!"), &remote);
-        puts("Sent message.");
-        xtimer_sleep(5);
+static uint16_t BST_PORT = 1119;
+static uint16_t MULTICAST_PORT = 8561;
+uint8_t buf[128];
+
+static int _find_server(void) {
+    /* Await broadcast from server. */
+    sock_udp_ep_t local = SOCK_IPV6_EP_ANY;
+    local.port = MULTICAST_PORT;
+    sock_udp_t sock;
+
+    if (sock_udp_create(&sock, &local, NULL, 0) < 0) {
+        puts("Error creating UDP sock");
+        return 1;
     }
+
+    while (1) {
+        sock_udp_ep_t remote;
+        ssize_t res;
+        char addrstr[IPV6_ADDR_MAX_STR_LEN];
+        uint16_t rport;
+
+        if ((res = sock_udp_recv(&sock, buf, sizeof(buf), SOCK_NO_TIMEOUT, &remote)) >= 0) {
+            sock_udp_ep_fmt(&remote, addrstr, &rport);
+            printf("[Client/UDP] Received a message from: %s[:%d]\n\t     Message: ", addrstr, rport);
+            for (int i = 0; i < res; i++) {
+                printf("%c", buf[i]);
+            }
+
+            puts("");
+        }
+    }
+
+    return 0;
+}
+
+static int _run_client(void) {
+    int res;
+    sock_tcp_t sock;
+    sock_tcp_ep_t remote = SOCK_IPV6_EP_ANY;
+
+    remote.port = BST_PORT;
+    ipv6_addr_from_str((ipv6_addr_t *)&remote.addr, "fe80::d8fa:55ff:fedf:4523");
+    if (sock_tcp_connect(&sock, &remote, 0, 0) < 0) {
+        puts("Error connecting sock");
+        return 1;
+    }
+
+    puts("Sending \"Hello!\"");
+    if ((res = sock_tcp_write(&sock, "Hello!", sizeof("Hello!"))) < 0) {
+        puts("Errored on write");
+    } else {
+        if ((res = sock_tcp_read(&sock, &buf, sizeof(buf), SOCK_NO_TIMEOUT)) <= 0) {
+            puts("Disconnected");
+        }
+
+        printf("Read: \"");
+        for (int i = 0; i < res; i++) {
+            printf("%c", buf[i]);
+        }
+
+        puts("\"");
+    }
+    sock_tcp_disconnect(&sock);
+    return res;
+}
+
+int bst_client(void) {
+    // Start DISCOVER
+    _find_server();
+    _run_client();
+
+    return 0;
 }

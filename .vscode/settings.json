@@ -11,7 +11,10 @@
         "netif.h": "c",
         "string.h": "c",
         "nettype.h": "c",
-        "udp.h": "c"
+        "udp.h": "c",
+        "bst_client.h": "c",
+        "telnet.h": "c",
+        "common.h": "c"
     },
     "cmake.configureOnOpen": false
 }
