@@ -5,6 +5,9 @@ RIOTBASE ?= $(CURDIR)/../RIOT
 # Enable safety checking for development process, disable in production
 DEVELHELP ?= 1
 
+# Enable debug logging
+ENABLE_DEBUG ?= false
+
 # Include packages that pull up and auto-init the link layer.
 # NOTE: 6LoWPAN will be included if IEEE802.15.4 devices are present
 USEMODULE += netdev_default
@@ -13,20 +16,20 @@ USEMODULE += auto_init_gnrc_netif
 # Remove this if more than one interface is present
 USEMODULE += gnrc_netif_single
 # Specify the minimum networking modules for IPv6
-USEMODULE += gnrc_ipv6
+# USEMODULE += gnrc_ipv6
 USEMODULE += gnrc_ipv6_default
 # Include UDP Support
-USEMODULE += gnrc_udp
+# USEMODULE += gnrc_udp
 USEMODULE += gnrc_sock_udp
 USEMODULE += gnrc_sock_tcp
 USEMODULE += sock_util
 
 # Optional modules
-USEMODULE += gnrc_icmpv6_echo
+# USEMODULE += gnrc_icmpv6_echo
 
-USEMODULE += shell
-USEMODULE += shell_commands
-USEMODULE += ps
+# USEMODULE += shell
+# USEMODULE += shell_commands
+# USEMODULE += ps
 
 CFLAGS += -DLOG_LEVEL=LOG_NONE
 CFLAGS += -DCONFIG_GNRC_NETIF_IPV6_ADDRS_NUMOF=2 \
@@ -36,6 +39,10 @@ CFLAGS += -DCONFIG_GNRC_NETIF_IPV6_ADDRS_NUMOF=2 \
 ifeq ($(BOARD),avr-rss2)
     CFLAGS += -DAVR_RSS2
 endif
+
+ifeq ($(ENABLE_DEBUG),true)
+    CFLAGS += -DDEBUG_LOG
+endif 
 
 # Enable/Disable to show compiler invocation lines
 QUIET ?= 1

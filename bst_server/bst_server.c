@@ -24,8 +24,8 @@
 #define MSG_ACTION_STOP (0x201)
 #define MSG_ACTION_OK (0x200)
 
-static uint16_t BST_PORT = 1119;
-// static uint16_t SBST_PORT = 9119;
+static uint16_t BST_PORT = 8119;
+// static uint16_t SBST_PORT = 8119;
 static uint16_t MULTICAST_PORT = 8561;
 
 static char _announce_stack[THREAD_STACKSIZE_SMALL];
@@ -98,6 +98,7 @@ static void* _server_thread(void* arg) {
             puts("[Server] Error accepting client connection.");
         } else {
             int read_res = 0;
+            puts("[Server] Accepted new client.");
 
             while (read_res >= 0) {
                 read_res = sock_tcp_read(sock, &buf, sizeof(buf), SOCK_NO_TIMEOUT);

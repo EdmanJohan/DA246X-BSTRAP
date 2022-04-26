@@ -13,13 +13,14 @@ countdown() {
   echo
 }
 
-while getopts b:a:c:t:: flag
+while getopts b:a:c:t:d:: flag
 do
     case "${flag}" in
         b) board=${OPTARG};;
         a) application=${OPTARG};;
         c) clean=${OPTARG};;
         t) terminal=${OPTARG};;
+        d) debug=${OPTARG};;
     esac
 done
 
@@ -62,18 +63,22 @@ else
     fi
 fi
 
-echo "Compiling w. BOARD=$board, APP=$application, PORT=$port"
+if [ "$debug" == "true" ] || [ "$debug" == "yes" ] || [ "$debug" == "1" ]; then
+    debug=true
+fi
+
+echo "Compiling w. BOARD=$board, APP=$application, PORT=$port, DEBUG=$debug"
 if [ "$board" == "avr-rss2" ]; then
     countdown;
 fi
 
 if [ -z "$clean" ] || [ "$clean" == "false" ]; then
-    BOARD=$board make all flash -C $application PORT=$port -j$NPROC
+    BOARD=$board make all flash -C $application PORT=$port -j$NPROC DEBUG_LOGGING=$debug
 else
-    BOARD=$board make clean all flash -C $application PORT=$port -j$NPROC
+    BOARD=$board make clean all flash -C $application PORT=$port -j$NPROC DEBUG_LOGGING=$debug
 fi
 
-if [ "$terminal" != "yes" ] && [ "$terminal" != "true" ]; then
+if [ "$terminal" != "true" ] && [ "$terminal" != "yes" ] && [ "$terminal" != "1" ]; then
     while true; do
         echo ""
         read -p "Open terminal? " yn
@@ -85,7 +90,7 @@ if [ "$terminal" != "yes" ] && [ "$terminal" != "true" ]; then
     done
 fi
 
-if [ "$terminal" == "yes" ] || [ "$terminal" == "true" ]; then
+if [ "$terminal" == "true" ] || [ "$terminal" == "yes" ] || [ "$terminal" == "1" ]; then
     if [ "$board" == "avr-rss2" ]; then
         if [ "$application" == "bst_server" ]; then
             minicom ttyUSB0
@@ -93,7 +98,7 @@ if [ "$terminal" == "yes" ] || [ "$terminal" == "true" ]; then
             minicom ttyUSB1
         fi
     elif [ "$board" == "native" ]; then
-        BOARD=$board make term -C $application PORT=$port
+        BOARD=$board make term -C $application PORT=$port DEBUG_LOGGING=$debug
     else
         exit;
     fi

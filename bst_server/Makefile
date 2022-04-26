@@ -14,9 +14,9 @@ USEMODULE += auto_init_gnrc_netif
 USEMODULE += gnrc_netif_single
 # Specify the minimum networking modules for IPv6
 USEMODULE += gnrc_ipv6_default
-USEMODULE += gnrc_ipv6
+# USEMODULE += gnrc_ipv6
 # Include UDP Support
-USEMODULE += gnrc_udp
+# USEMODULE += gnrc_udp
 USEMODULE += gnrc_sock_udp
 USEMODULE += gnrc_sock_tcp
 USEMODULE += sock_util
