@@ -11,7 +11,9 @@
         "netif.h": "c",
         "string.h": "c",
         "nettype.h": "c",
-        "udp.h": "c"
+        "udp.h": "c",
+        "utlist.h": "c",
+        "pktdump.h": "c"
     },
     "cmake.configureOnOpen": false
 }
