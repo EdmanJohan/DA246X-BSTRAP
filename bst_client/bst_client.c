@@ -14,6 +14,7 @@
 #include "net/af.h"
 #include "net/ipv6/addr.h"
 #include "net/protnum.h"
+#include "net/sock.h"
 #include "net/sock/tcp.h"
 #include "net/sock/udp.h"
 #include "net/sock/util.h"
@@ -70,17 +71,17 @@ static int _run_client(void) {
     sock_tcp_ep_t remote = SOCK_IPV6_EP_ANY;
     sock_tcp_t sock;
 
+    int retry = 0;
     remote.port = BST_PORT;
-    // ipv6_addr_from_str((ipv6_addr_t *)&remote.addr, SERVER_ADDR);
-    ipv6_addr_from_str((ipv6_addr_t *)&remote.addr, "fe80::fec2:3d00:1:856e");
-    if (sock_tcp_connect(&sock, &remote, 0, 0) < 0) {
-        puts("Error connecting sock");
-        return 1;
-    }
-
-    if (sock_tcp_connect(&sock, &remote, 0, 0) < 0) {
-        puts("Error connecting sock");
-        return 1;
+    ipv6_addr_from_str((ipv6_addr_t *)&remote.addr, SERVER_ADDR);
+    // ipv6_addr_from_str((ipv6_addr_t *)&remote.addr, "fe80::fec2:3d00:1:856e");
+    printf("Trying to connect to: %s[:%d]\n", SERVER_ADDR, BST_PORT);
+    while (retry == 0) {
+        if (sock_tcp_connect(&sock, &remote, 0, 0) < 0) {
+            puts("Error connecting sock");
+        } else {
+            retry = 1;
+        }
     }
 
     puts("Sending \"Hello!\"");

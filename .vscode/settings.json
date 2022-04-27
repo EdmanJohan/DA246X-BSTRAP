@@ -16,7 +16,8 @@
         "telnet.h": "c",
         "common.h": "c",
         "util.h": "c",
-        "tcp.h": "c"
+        "tcp.h": "c",
+        "addr.h": "c"
     },
     "cmake.configureOnOpen": false
 }

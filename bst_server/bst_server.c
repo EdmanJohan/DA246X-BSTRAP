@@ -19,6 +19,8 @@
 #define SOCK_QUEUE_LEN (1U)
 #define SERVER_MSG_QUEUE_SIZE (8)
 
+#define GLOBAL_ADDR "2001:db8::1"
+
 #define ANNOUNCE_MSG "ANNOUNCE"
 #define MSG_ACTION (0x2)
 #define MSG_ACTION_STOP (0x201)
@@ -37,15 +39,27 @@ sock_tcp_t sock_queue[SOCK_QUEUE_LEN];
 
 static void* _announce(void* arg) {
     (void)arg;
-    msg_t msg, reply;
 
+    /* Configure local UDP endpoint */
+    sock_udp_ep_t local = SOCK_IPV6_EP_ANY;
+    sock_udp_t sock;
+
+    ipv6_addr_from_str((ipv6_addr_t*)&local.addr, GLOBAL_ADDR);
+    local.port = 13123;
+
+    if (sock_udp_create(&sock, &local, NULL, 0) != 0) {
+        puts("[Server] Error creating UDP socket.");
+        return NULL;
+    }
+
+    /* Configure remote UDP endpoint */
     sock_udp_ep_t remote = {.family = AF_INET6};
     remote.port = MULTICAST_PORT;
-    ipv6_addr_set_all_nodes_multicast((ipv6_addr_t*)&remote.addr.ipv6,
-                                      IPV6_ADDR_MCAST_SCP_LINK_LOCAL);
+    ipv6_addr_set_all_nodes_multicast((ipv6_addr_t*)&remote.addr.ipv6, IPV6_ADDR_MCAST_SCP_LINK_LOCAL);
 
+    msg_t msg, reply;
     while (1) {
-        sock_udp_send(NULL, ANNOUNCE_MSG, sizeof(ANNOUNCE_MSG), &remote);
+        sock_udp_send(&sock, ANNOUNCE_MSG, sizeof(ANNOUNCE_MSG), &remote);
 
         msg_try_receive(&msg);
         if (msg.type == MSG_ACTION && msg.content.value == MSG_ACTION_STOP) {
@@ -63,6 +77,38 @@ static void* _announce(void* arg) {
     return NULL;
 }
 
+static void configure_endpoint(void) {
+    gnrc_netif_t* netif = NULL;
+
+    if (gnrc_netif_numof() == 1) {
+        ipv6_addr_t glob_addr;
+        ipv6_addr_from_str(&glob_addr, GLOBAL_ADDR);
+        netif = gnrc_netif_iter(netif);
+
+        gnrc_netif_ipv6_addr_add(netif, &glob_addr, 64, 0);
+    }
+
+    netif = NULL;
+    uint8_t devNum = 0;
+    while ((netif = gnrc_netif_iter(netif))) {
+        ipv6_addr_t ipv6_addrs[CONFIG_GNRC_NETIF_IPV6_ADDRS_NUMOF];
+        int res = gnrc_netapi_get(netif->pid, NETOPT_IPV6_ADDR, 0, ipv6_addrs, sizeof(ipv6_addrs));
+
+        if (res < 0) {
+            continue;
+        }
+
+        printf("[Server] Addresses on dev%d:\n", devNum);
+        for (unsigned i = 0; i < (unsigned)(res / sizeof(ipv6_addr_t)); i++) {
+            char ipv6_addr[IPV6_ADDR_MAX_STR_LEN];
+
+            ipv6_addr_to_str(ipv6_addr, &ipv6_addrs[i], IPV6_ADDR_MAX_STR_LEN);
+            printf("\t[%u] %s\n", i, ipv6_addr);
+        }
+        devNum++;
+    }
+}
+
 static void* _server_thread(void* arg) {
     (void)arg;
     msg_t msg, reply;
@@ -73,17 +119,34 @@ static void* _server_thread(void* arg) {
 
     local.port = BST_PORT;
 
-    if (sock_tcp_listen(&queue, &local, sock_queue, SOCK_QUEUE_LEN, 0) < 0) {
+    if (sock_tcp_listen(&queue, &local, sock_queue, SOCK_QUEUE_LEN, 0) != 0) {
         puts("Error creating listening queue.");
         return NULL;
     }
 
-    printf("[Server] Now listening on %d\n", local.port);
+    uint16_t lport = 0;
+    char ipv6_addr[IPV6_ADDR_MAX_STR_LEN];
+    sock_tcp_ep_fmt(&local, ipv6_addr, &lport);
+    printf("[Server] Now listening on %s[:%d]\n", ipv6_addr, lport);
     while (1) {
         sock_tcp_t* sock;
 
-        if (sock_tcp_accept(&queue, &sock, SOCK_NO_TIMEOUT) < 0) {
-            puts("[Server] Error accepting client connection.");
+        msg_try_receive(&msg);
+        if (msg.type == MSG_ACTION && msg.content.value == MSG_ACTION_STOP) {
+            puts("[Server] Stopping server thread.");
+
+            reply.type = MSG_ACTION;
+            reply.content.value = MSG_ACTION_OK;
+            msg_reply(&msg, &reply);
+            sock_tcp_stop_listen(&queue);
+            thread_zombify();
+        }
+
+        int ret_code;
+        if ((ret_code = sock_tcp_accept(&queue, &sock, UINT16_MAX)) != 0) {
+            if (ret_code != -110) {
+                puts("[Server] Error accepting client connection.");
+            }
         } else {
             int read_res = 0;
             puts("[Server] Accepted new client.");
@@ -112,17 +175,6 @@ static void* _server_thread(void* arg) {
 
             sock_tcp_disconnect(sock);
         }
-
-        msg_try_receive(&msg);
-        if (msg.type == MSG_ACTION && msg.content.value == MSG_ACTION_STOP) {
-            puts("[Server] Stopping server thread.");
-
-            reply.type = MSG_ACTION;
-            reply.content.value = MSG_ACTION_OK;
-            msg_reply(&msg, &reply);
-            sock_tcp_stop_listen(&queue);
-            thread_zombify();
-        }
     }
     return NULL;
 }
@@ -138,6 +190,7 @@ static int start_server(char* mode) {
         return 1;
     }
 
+    configure_endpoint();
     announce_pid = thread_create(_announce_stack, sizeof(_announce_stack), THREAD_PRIORITY_MAIN - 2,
                                  THREAD_CREATE_STACKTEST, _announce, NULL, "bst-server-announce");
 

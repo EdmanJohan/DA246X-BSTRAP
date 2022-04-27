@@ -1,4 +1,4 @@
-APPLICATION = bst_clientice
+APPLICATION = udp_client
 BOARD ?= native
 TAP ?= tap1
 RIOTBASE ?= $(CURDIR)/../RIOT
@@ -25,11 +25,12 @@ USEMODULE += gnrc_sock_tcp
 USEMODULE += gnrc_sock_udp
 USEMODULE += sock_util
 
+USEMODULE += dhcpv6_client_auto_init
+
 # RPL Modules
-# USEMODULE += sixlowpan
+USEMODULE += sixlowpan
 USEMODULE += gnrc_rpl
 USEMODULE += auto_init_gnrc_rpl
-USEMODULE += dhcpv6_client_auto_init
 
 # Optional modules
 USEMODULE += gnrc_icmpv6_echo
@@ -38,12 +39,12 @@ USEMODULE += shell_commands
 USEMODULE += ps
 
 CFLAGS += -DLOG_LEVEL=LOG_NONE
-CFLAGS += -DCONFIG_GNRC_NETIF_IPV6_ADDRS_NUMOF=4 \
-          -DGNRC_NETIF_IPV6_GROUPS_NUMOF=4
+CFLAGS += -DCONFIG_GNRC_NETIF_IPV6_ADDRS_NUMOF=2 \
+          -DGNRC_NETIF_IPV6_GROUPS_NUMOF=2 -DCONFIG_GNRC_IPV6_NIB_NUMOF=4 \
+          -DCONFIG_GNRC_IPV6_NIB_OFFL_NUMOF=1
 
 ifeq ($(BOARD),avr-rss2)
     CFLAGS += -DAVR_RSS2
-    USEMODULE += gnrc_sixlowpan
 endif
 
 ifeq ($(ENABLE_DEBUG),true)
@@ -72,10 +73,8 @@ ifndef CONFIG_GNRC_TCP_CONNECTION_TIMEOUT_DURATION_MS
 endif
 
 # Set the shell echo configuration via CFLAGS if not being controlled via Kconfig
-ifeq ($(BOARD),native)
-  ifndef CONFIG_KCONFIG_USEMODULE_SHELL
-    CFLAGS += -DCONFIG_SHELL_NO_ECHO
-  endif
+ifndef CONFIG_KCONFIG_USEMODULE_SHELL
+  CFLAGS += -DCONFIG_SHELL_NO_ECHO
 endif
 
 # Set a custom channel if needed
