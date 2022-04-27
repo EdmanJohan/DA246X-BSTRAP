@@ -12,17 +12,11 @@
 #ifndef BST_CLIENT_H
 #define BST_CLIENT_H
 
-#include "net/af.h"
-#include "net/ipv6/addr.h"
-#include "net/protnum.h"
-#include "net/sock/udp.h"
-#include "xtimer.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-extern int bst_client(void);
+extern void *bst_client(void *arg);
 
 #ifdef __cplusplus
 }

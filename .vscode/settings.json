@@ -14,7 +14,9 @@
         "udp.h": "c",
         "bst_client.h": "c",
         "telnet.h": "c",
-        "common.h": "c"
+        "common.h": "c",
+        "util.h": "c",
+        "tcp.h": "c"
     },
     "cmake.configureOnOpen": false
 }

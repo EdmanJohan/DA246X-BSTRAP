@@ -13,6 +13,7 @@
 
 #include "net/af.h"
 #include "net/ipv6/addr.h"
+#include "net/protnum.h"
 #include "net/sock/tcp.h"
 #include "net/sock/udp.h"
 #include "net/sock/util.h"
@@ -44,7 +45,7 @@ static int _find_server(void) {
             sock_udp_ep_fmt(&remote, addrstr, &rport);
 
             //#ifdef DEBUG_LOG
-            printf("[Client/UDP] Received a message from: %s[:%d]\n\t     Message: ", addrstr, rport);
+            printf("[Client/UDP] Received a message from: %s[:%u]\n\t     Message: ", addrstr, rport);
             for (int i = 0; i < res; i++) {
                 printf("%c", buf[i]);
             }
@@ -70,7 +71,12 @@ static int _run_client(void) {
     sock_tcp_t sock;
 
     remote.port = BST_PORT;
-    ipv6_addr_from_str((ipv6_addr_t *)&remote.addr, SERVER_ADDR);
+    // ipv6_addr_from_str((ipv6_addr_t *)&remote.addr, SERVER_ADDR);
+    ipv6_addr_from_str((ipv6_addr_t *)&remote.addr, "fe80::fec2:3d00:1:856e");
+    if (sock_tcp_connect(&sock, &remote, 0, 0) < 0) {
+        puts("Error connecting sock");
+        return 1;
+    }
 
     if (sock_tcp_connect(&sock, &remote, 0, 0) < 0) {
         puts("Error connecting sock");
@@ -95,7 +101,8 @@ static int _run_client(void) {
     return res;
 }
 
-int bst_client(void) {
+void *bst_client(void *arg) {
+    (void)arg;
     // Start DISCOVER
     _find_server();
     _run_client();

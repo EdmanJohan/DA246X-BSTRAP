@@ -83,17 +83,6 @@ static void* _server_thread(void* arg) {
     while (1) {
         sock_tcp_t* sock;
 
-        msg_try_receive(&msg);
-        if (msg.type == MSG_ACTION && msg.content.value == MSG_ACTION_STOP) {
-            puts("[Server] Stopping server thread.");
-
-            reply.type = MSG_ACTION;
-            reply.content.value = MSG_ACTION_OK;
-            msg_reply(&msg, &reply);
-            sock_tcp_stop_listen(&queue);
-            thread_zombify();
-        }
-
         if (sock_tcp_accept(&queue, &sock, SOCK_NO_TIMEOUT) < 0) {
             puts("[Server] Error accepting client connection.");
         } else {
@@ -123,6 +112,17 @@ static void* _server_thread(void* arg) {
             }
 
             sock_tcp_disconnect(sock);
+        }
+
+        msg_try_receive(&msg);
+        if (msg.type == MSG_ACTION && msg.content.value == MSG_ACTION_STOP) {
+            puts("[Server] Stopping server thread.");
+
+            reply.type = MSG_ACTION;
+            reply.content.value = MSG_ACTION_OK;
+            msg_reply(&msg, &reply);
+            sock_tcp_stop_listen(&queue);
+            thread_zombify();
         }
     }
     return NULL;
