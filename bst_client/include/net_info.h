@@ -25,13 +25,12 @@
 #include "net/ipv6/addr.h"
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
-    extern void _print_hw_addr(void);
+extern void _print_hw_addr(void);
 
-    extern void _print_ip_addr(void);
+extern void _print_ip_addr(void);
 
 #ifdef __cplusplus
 }

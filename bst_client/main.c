@@ -10,11 +10,11 @@
  */
 
 #include <stdio.h>
-#include "include/net_info.h"
-#include "include/bst_client.h"
 
-int main(void)
-{
+#include "include/bst_client.h"
+#include "include/net_info.h"
+
+int main(void) {
     puts("DA246X Bootstrapper | CLIENT");
 
     _print_hw_addr();

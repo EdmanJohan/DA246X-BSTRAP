@@ -25,11 +25,11 @@ static const shell_command_t shell_commands[] = {
     {NULL, NULL, NULL}};
 
 int main(void) {
-  msg_init_queue(_main_msg_queue, MAIN_QUEUE_SIZE);
-  puts("DA246X Bootstrapper | SERVER");
+    msg_init_queue(_main_msg_queue, MAIN_QUEUE_SIZE);
+    puts("DA246X Bootstrapper | SERVER");
 
-  char line_buf[SHELL_DEFAULT_BUFSIZE];
-  shell_run_forever(shell_commands, line_buf, SHELL_DEFAULT_BUFSIZE);
+    char line_buf[SHELL_DEFAULT_BUFSIZE];
+    shell_run_forever(shell_commands, line_buf, SHELL_DEFAULT_BUFSIZE);
 
-  return 0;
+    return 0;
 }
