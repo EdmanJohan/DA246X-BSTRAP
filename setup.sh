@@ -8,7 +8,7 @@ while true; do
     read -p "Install minicom configs? " yn
     case $yn in
         [Yy]* ) profiles=yes; break;;
-        [Nn]* ) break;;
+        [Nn]* ) profiles=no; break;;
         * ) echo "Please answer yes or no.";;
     esac
 done
