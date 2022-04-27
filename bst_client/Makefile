@@ -29,7 +29,7 @@ USEMODULE += sock_util
 # USEMODULE += sixlowpan
 USEMODULE += gnrc_rpl
 USEMODULE += auto_init_gnrc_rpl
-USEMODULE += dhcpv6_client_auto_init
+# USEMODULE += dhcpv6_client_auto_init
 
 # Optional modules
 USEMODULE += gnrc_icmpv6_echo
@@ -38,7 +38,7 @@ USEMODULE += shell_commands
 USEMODULE += ps
 
 CFLAGS += -DLOG_LEVEL=LOG_NONE
-CFLAGS += -DCONFIG_GNRC_NETIF_IPV6_ADDRS_NUMOF=4 \
+# CFLAGS += -DCONFIG_GNRC_NETIF_IPV6_ADDRS_NUMOF=4 \
           -DGNRC_NETIF_IPV6_GROUPS_NUMOF=4
 
 ifeq ($(BOARD),avr-rss2)

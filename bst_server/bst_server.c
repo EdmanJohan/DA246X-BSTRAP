@@ -59,7 +59,7 @@ static void* _announce(void* arg) {
 
     msg_t msg, reply;
     while (1) {
-        sock_udp_send(&sock, ANNOUNCE_MSG, sizeof(ANNOUNCE_MSG), &remote);
+        sock_udp_send(NULL, ANNOUNCE_MSG, sizeof(ANNOUNCE_MSG), &remote);
 
         msg_try_receive(&msg);
         if (msg.type == MSG_ACTION && msg.content.value == MSG_ACTION_STOP) {

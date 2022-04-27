@@ -27,10 +27,9 @@ USEMODULE += gnrc_sock_udp
 USEMODULE += sock_util
 
 # RPL Modules
-# USEMODULE += gnrc_sixlowpan
 USEMODULE += gnrc_rpl
 USEMODULE += auto_init_gnrc_rpl
-USEMODULE += dhcpv6_client_auto_init
+# USEMODULE += dhcpv6_client_auto_init
 
 # Optional modules
 USEMODULE += gnrc_icmpv6_echo
@@ -39,19 +38,19 @@ USEMODULE += shell_commands
 USEMODULE += ps
 
 USEMODULE += fib
-USEMODULE += gnrc_sixlowpan_border_router_default
 
 CFLAGS += -DLOG_LEVEL=LOG_NONE
 CFLAGS += -DCONFIG_GNRC_IPV6_NIB_ARSM=1
 CFLAGS += -DCONFIG_GNRC_IPV6_NIB_SLAAC=1
 CFLAGS += -DCONFIG_GNRC_IPV6_NIB_NO_RTR_SOL=0
 CFLAGS += -DLOG_LEVEL=LOG_NONE
-CFLAGS += -DCONFIG_GNRC_NETIF_IPV6_ADDRS_NUMOF=6 \
-          -DGNRC_NETIF_IPV6_GROUPS_NUMOF=6
+# CFLAGS += -DCONFIG_GNRC_NETIF_IPV6_ADDRS_NUMOF=2 \
+          -DGNRC_NETIF_IPV6_GROUPS_NUMOF=2
 
 ifeq ($(BOARD),avr-rss2)
     CFLAGS += -DAVR_RSS2
     USEMODULE += gnrc_sixlowpan
+    USEMODULE += gnrc_sixlowpan_border_router_default
 endif
 
 ifeq ($(ENABLE_DEBUG),true)
