@@ -34,7 +34,6 @@ static kernel_pid_t announce_pid = KERNEL_PID_UNDEF;
 static kernel_pid_t server_main_pid = KERNEL_PID_UNDEF;
 
 sock_tcp_t sock_queue[SOCK_QUEUE_LEN];
-static msg_t server_msg_queue[SERVER_MSG_QUEUE_SIZE];
 
 static void* _announce(void* arg) {
     (void)arg;
@@ -138,8 +137,6 @@ static int start_server(char* mode) {
         printf("Error: Server is already running.\n");
         return 1;
     }
-
-    msg_init_queue(server_msg_queue, SERVER_MSG_QUEUE_SIZE);
 
     announce_pid = thread_create(_announce_stack, sizeof(_announce_stack), THREAD_PRIORITY_MAIN - 2,
                                  THREAD_CREATE_STACKTEST, _announce, NULL, "bst-server-announce");
