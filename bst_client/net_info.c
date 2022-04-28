@@ -10,7 +10,7 @@
  */
 #include "include/net_info.h"
 
-void _print_hw_addr(void) {
+void print_hw_addr(void) {
 #ifdef AVR_RSS2
     eui64_t eui64_addr;
     if (at24mac_get_eui64(0, &eui64_addr) == 0) {
@@ -19,7 +19,7 @@ void _print_hw_addr(void) {
 #endif
 }
 
-void _print_ip_addr(void) {
+void print_ip_addr(void) {
     /* get interfaces and print their addresses */
     gnrc_netif_t *netif = NULL;
     while ((netif = gnrc_netif_iter(netif))) {

@@ -28,9 +28,9 @@
 extern "C" {
 #endif
 
-extern void _print_hw_addr(void);
+extern void print_hw_addr(void);
 
-extern void _print_ip_addr(void);
+extern void print_ip_addr(void);
 
 #ifdef __cplusplus
 }

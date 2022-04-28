@@ -26,10 +26,12 @@ USEMODULE += gnrc_sock_udp
 USEMODULE += sock_util
 
 # RPL Modules
-# USEMODULE += sixlowpan
 USEMODULE += gnrc_rpl
 USEMODULE += auto_init_gnrc_rpl
 USEMODULE += dhcpv6_client_auto_init
+
+# EEPREG
+USEMODULE += eepreg
 
 # Optional modules
 USEMODULE += gnrc_icmpv6_echo

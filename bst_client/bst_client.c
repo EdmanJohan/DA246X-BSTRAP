@@ -66,40 +66,45 @@ static int _find_server(void) {
     return 0;
 }
 
-static int _run_client(void) {
-    int res;
+static void _run_client(void) {
     sock_tcp_ep_t remote = SOCK_IPV6_EP_ANY;
     sock_tcp_t sock;
 
-    int retry = 0;
     remote.port = BST_PORT;
     ipv6_addr_from_str((ipv6_addr_t *)&remote.addr, SERVER_ADDR);
-    // ipv6_addr_from_str((ipv6_addr_t *)&remote.addr, "fe80::fec2:3d00:1:856e");
     printf("Trying to connect to: %s[:%d]\n", SERVER_ADDR, BST_PORT);
-    while (retry == 0) {
-        if (sock_tcp_connect(&sock, &remote, 0, 0) < 0) {
+
+    uint8_t conn_retry = 0;
+    while (conn_retry == 0) {
+        if (sock_tcp_connect(&sock, &remote, 0, 0) != 0) {
             puts("Error connecting sock");
         } else {
-            retry = 1;
+            conn_retry = 1;
         }
     }
 
+    // Receive pubkey from server
+    // Encode symkey
+    // Transfer symkey to server
+
     puts("Sending \"Hello!\"");
-    if ((res = sock_tcp_write(&sock, "Hello!", sizeof("Hello!"))) < 0) {
+    char *HELLO_MSG = "Hello";
+    if (sock_tcp_write(&sock, HELLO_MSG, sizeof(HELLO_MSG)) < 0) {
         puts("Errored on write");
     } else {
-        if ((res = sock_tcp_read(&sock, &buf, sizeof(buf),
-                                 SOCK_NO_TIMEOUT)) <= 0) {
+        int res = 0;
+        if ((res = sock_tcp_read(&sock, &buf, sizeof(buf), SOCK_NO_TIMEOUT)) <= 0) {
             puts("Disconnected");
         }
+
         printf("Read: \"");
         for (int i = 0; i < res; i++) {
             printf("%c", buf[i]);
         }
         puts("\"");
     }
+
     sock_tcp_disconnect(&sock);
-    return res;
 }
 
 void *bst_client(void *arg) {
