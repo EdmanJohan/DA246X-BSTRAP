@@ -17,7 +17,8 @@
         "common.h": "c",
         "util.h": "c",
         "tcp.h": "c",
-        "addr.h": "c"
+        "addr.h": "c",
+        "errno.h": "c"
     },
     "cmake.configureOnOpen": false
 }

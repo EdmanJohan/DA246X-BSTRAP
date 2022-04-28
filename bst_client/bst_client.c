@@ -19,8 +19,10 @@
 #include "net/sock/udp.h"
 #include "net/sock/util.h"
 
-static uint16_t BST_PORT = 8119;
-static uint16_t MULTICAST_PORT = 8561;
+static const uint8_t MSG_ANNOUNCE = 0xD0;
+
+static const uint16_t BST_PORT = 8119;
+static const uint16_t MULTICAST_PORT = 8561;
 uint8_t buf[128];
 
 static char SERVER_ADDR[IPV6_ADDR_MAX_STR_LEN];
@@ -53,11 +55,9 @@ static int _find_server(void) {
             puts("");
             //#endif
 
-            if (strncmp((char *)buf, "ANNOUNCE", res) == 0) {
+            if (strncmp((char *)buf, (char *)&MSG_ANNOUNCE, res) == 0) {
                 ipv6_addr_to_str(SERVER_ADDR, (ipv6_addr_t *)&remote.addr.ipv6, sizeof(SERVER_ADDR));
                 sock_udp_close(&sock);
-                // printf("[Client/UDP: Server is %s\n", SERVER_ADDR);
-                // puts("[Client/UDP] Exiting thread.");
                 break;
             }
         }

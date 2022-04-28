@@ -11,45 +11,48 @@
 
 #include <stdio.h>
 
+#include "errno.h"
+#include "msg.h"
 #include "net/sock/tcp.h"
 #include "net/sock/udp.h"
 #include "net/sock/util.h"
 #include "xtimer.h"
 
 #define SOCK_QUEUE_LEN (1U)
-#define SERVER_MSG_QUEUE_SIZE (8)
+#define QUEUE_SIZE (2)
 
-#define GLOBAL_ADDR "2001:db8::1"
+static uint8_t CONFIGURED = 0x0u;
+static const uint8_t MSG_ACTION_STOP = 0x1u;
+static const uint8_t MSG_ANNOUNCE = 0xD0;
 
-#define ANNOUNCE_MSG "ANNOUNCE"
-#define MSG_ACTION (0x2)
-#define MSG_ACTION_STOP (0x201)
-#define MSG_ACTION_OK (0x200)
+static const uint16_t BST_PORT = 8119;
+// static uint16_t SBST_PORT = 8819;
+static const uint16_t MULTICAST_PORT = 8561;
+static const char* GLOBAL_ADDR = "2001:db8::1";
 
-static uint16_t BST_PORT = 8119;
-// static uint16_t SBST_PORT = 8119;
-static uint16_t MULTICAST_PORT = 8561;
-
-static char _announce_stack[THREAD_STACKSIZE_SMALL];
-static char _server_stack[THREAD_STACKSIZE_MAIN];
 static kernel_pid_t announce_pid = KERNEL_PID_UNDEF;
-static kernel_pid_t server_main_pid = KERNEL_PID_UNDEF;
+static char announce_stack[THREAD_STACKSIZE_DEFAULT];
+static msg_t announce_msg_queue[QUEUE_SIZE];
 
-sock_tcp_t sock_queue[SOCK_QUEUE_LEN];
+static kernel_pid_t server_main_pid = KERNEL_PID_UNDEF;
+static char server_stack[THREAD_STACKSIZE_DEFAULT + THREAD_EXTRA_STACKSIZE_PRINTF];
+static msg_t server_msg_queue[QUEUE_SIZE];
+
+static sock_tcp_t sock_queue[SOCK_QUEUE_LEN];
 
 static void* _announce(void* arg) {
     (void)arg;
+    msg_init_queue(announce_msg_queue, QUEUE_SIZE);
 
     /* Configure local UDP endpoint */
     sock_udp_ep_t local = SOCK_IPV6_EP_ANY;
     sock_udp_t sock;
 
+    /* Bind to global address, using predefined to operate w/o infrastructure */
     ipv6_addr_from_str((ipv6_addr_t*)&local.addr, GLOBAL_ADDR);
-    local.port = 13123;
 
     if (sock_udp_create(&sock, &local, NULL, 0) != 0) {
-        puts("[Server] Error creating UDP socket.");
-        return NULL;
+        return (void*)1;
     }
 
     /* Configure remote UDP endpoint */
@@ -57,27 +60,32 @@ static void* _announce(void* arg) {
     remote.port = MULTICAST_PORT;
     ipv6_addr_set_all_nodes_multicast((ipv6_addr_t*)&remote.addr.ipv6, IPV6_ADDR_MCAST_SCP_LINK_LOCAL);
 
-    msg_t msg, reply;
+    msg_t msg;
     while (1) {
-        sock_udp_send(&sock, ANNOUNCE_MSG, sizeof(ANNOUNCE_MSG), &remote);
+        if (msg_try_receive(&msg) == 1) {
+            if (msg.content.value == MSG_ACTION_STOP) {
+                sock_udp_close(&sock);
 
-        msg_try_receive(&msg);
-        if (msg.type == MSG_ACTION && msg.content.value == MSG_ACTION_STOP) {
-            puts("[Server] Stopping announce thread.");
-
-            reply.type = MSG_ACTION;
-            reply.content.value = MSG_ACTION_OK;
-            msg_reply(&msg, &reply);
-            thread_zombify();
+                msg_t reply;
+                reply.content.value = msg.content.value & 0x0;
+                msg_reply(&msg, &reply);
+                thread_zombify();
+            }
         }
 
-        xtimer_sleep(15);
+        sock_udp_send(&sock, &MSG_ANNOUNCE, sizeof(MSG_ANNOUNCE), &remote);
+        xtimer_sleep(10);
     }
 
+    /* Should never be reached */
     return NULL;
 }
 
 static void configure_endpoint(void) {
+    if (CONFIGURED == 0x1) {
+        return;
+    }
+
     gnrc_netif_t* netif = NULL;
 
     if (gnrc_netif_numof() == 1) {
@@ -107,46 +115,51 @@ static void configure_endpoint(void) {
         }
         devNum++;
     }
+
+    CONFIGURED = 0x1;
 }
 
 static void* _server_thread(void* arg) {
     (void)arg;
-    msg_t msg, reply;
+    msg_init_queue(server_msg_queue, QUEUE_SIZE);
 
-    sock_tcp_ep_t local = SOCK_IPV6_EP_ANY;
-    sock_tcp_queue_t queue;
     uint8_t buf[128];
-
+    sock_tcp_queue_t queue;
+    sock_tcp_ep_t local = SOCK_IPV6_EP_ANY;
     local.port = BST_PORT;
 
     if (sock_tcp_listen(&queue, &local, sock_queue, SOCK_QUEUE_LEN, 0) != 0) {
-        puts("Error creating listening queue.");
+        puts("[Server] Error creating listening queue.");
         return NULL;
     }
 
     uint16_t lport = 0;
     char ipv6_addr[IPV6_ADDR_MAX_STR_LEN];
     sock_tcp_ep_fmt(&local, ipv6_addr, &lport);
+
     printf("[Server] Now listening on %s[:%d]\n", ipv6_addr, lport);
+
+    msg_t msg;
     while (1) {
         sock_tcp_t* sock;
 
-        msg_try_receive(&msg);
-        if (msg.type == MSG_ACTION && msg.content.value == MSG_ACTION_STOP) {
-            puts("[Server] Stopping server thread.");
+        if (msg_try_receive(&msg) == 1) {
+            if (msg.content.value == MSG_ACTION_STOP) {
+                sock_tcp_stop_listen(&queue);
 
-            reply.type = MSG_ACTION;
-            reply.content.value = MSG_ACTION_OK;
-            msg_reply(&msg, &reply);
-            sock_tcp_stop_listen(&queue);
-            thread_zombify();
+                msg_t reply;
+                reply.content.value = msg.content.value & 0x0;
+                msg_reply(&msg, &reply);
+                thread_zombify();
+            }
         }
 
-        int ret_code;
-        if ((ret_code = sock_tcp_accept(&queue, &sock, UINT16_MAX)) != 0) {
-            if (ret_code != -110) {
-                puts("[Server] Error accepting client connection.");
+        int ret_code = 0;
+        if ((ret_code = sock_tcp_accept(&queue, &sock, UINT8_MAX)) != 0) {
+            if (ret_code != -ETIMEDOUT) {
+                printf("Error accepting tcp connection: %d\n", ret_code);
             }
+
         } else {
             int read_res = 0;
             puts("[Server] Accepted new client.");
@@ -176,6 +189,8 @@ static void* _server_thread(void* arg) {
             sock_tcp_disconnect(sock);
         }
     }
+
+    /* Should never be reached */
     return NULL;
 }
 
@@ -185,17 +200,17 @@ static int start_server(char* mode) {
         return 1;
     }
 
-    if (server_main_pid != KERNEL_PID_UNDEF) {
+    if (server_main_pid != KERNEL_PID_UNDEF && announce_pid != KERNEL_PID_UNDEF) {
         printf("Error: Server is already running.\n");
         return 1;
     }
 
     configure_endpoint();
-    announce_pid = thread_create(_announce_stack, sizeof(_announce_stack), THREAD_PRIORITY_MAIN - 2,
+    announce_pid = thread_create(announce_stack, sizeof(announce_stack), THREAD_PRIORITY_MAIN - 1,
                                  THREAD_CREATE_STACKTEST, _announce, NULL, "bst-server-announce");
 
-    server_main_pid = thread_create(_server_stack, sizeof(_server_stack), THREAD_PRIORITY_MAIN - 1,
-                                    THREAD_CREATE_STACKTEST, _server_thread, NULL, "bst-Server");
+    server_main_pid = thread_create(server_stack, sizeof(server_stack), THREAD_PRIORITY_MAIN - 2,
+                                    THREAD_CREATE_STACKTEST, _server_thread, NULL, "bst-server");
 
     return 0;
 }
@@ -207,16 +222,28 @@ static void stop_server(void) {
     }
 
     msg_t msg, reply;
-    msg.type = MSG_ACTION;
     msg.content.value = MSG_ACTION_STOP;
-    if (msg_send_receive(&msg, &reply, announce_pid) == 1 && msg_send_receive(&msg, &reply, server_main_pid) == 1) {
-        if (thread_kill_zombie(announce_pid) == 1 && thread_kill_zombie(server_main_pid) == 1) {
-            puts("Success: Server has been stopped.");
+
+    if (msg_send_receive(&msg, &reply, announce_pid) == 1) {
+        if (reply.content.value == 0x0) {
+            if (thread_kill_zombie(announce_pid) == 1) {
+                puts("Success: announce-thread has been stopped.");
+                announce_pid = KERNEL_PID_UNDEF;
+            }
         } else {
-            puts("Error: could not stop Server.");
+            printf("Failed to kill zombie: %d\n", reply.content.value);
         }
-    } else {
-        puts("Error: could not communicate with Server.");
+    }
+
+    if (msg_send_receive(&msg, &reply, server_main_pid) == 1) {
+        if (reply.content.value == 0x0) {
+            if (thread_kill_zombie(server_main_pid) == 1) {
+                puts("Success: Server has been stopped.");
+                server_main_pid = KERNEL_PID_UNDEF;
+            }
+        } else {
+            printf("Failed to kill zombiez: %d\n", reply.content.value);
+        }
     }
 }
 
