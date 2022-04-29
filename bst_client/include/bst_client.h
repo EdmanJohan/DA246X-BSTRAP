@@ -16,6 +16,31 @@
 extern "C" {
 #endif
 
+#include <stdint.h>
+#include <stdio.h>
+#include <string.h>
+
+#include "eepreg.h"
+#include "msg.h"
+#include "net/af.h"
+#include "net/gnrc.h"
+#include "net/gnrc/netif.h"
+#include "net/ipv6/addr.h"
+#include "net/protnum.h"
+#include "net/sock.h"
+#include "net/sock/tcp.h"
+#include "net/sock/udp.h"
+#include "net/sock/util.h"
+#include "periph/eeprom.h"
+#include "random.h"
+#include "shell.h"
+#include "thread.h"
+
+#ifdef AVR_RSS2
+#include "at24mac.h"
+#include "at24mac_params.h"
+#endif
+
 extern void *bst_client(void *arg);
 
 #ifdef __cplusplus

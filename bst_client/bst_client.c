@@ -11,14 +11,6 @@
 
 #include "include/bst_client.h"
 
-#include "net/af.h"
-#include "net/ipv6/addr.h"
-#include "net/protnum.h"
-#include "net/sock.h"
-#include "net/sock/tcp.h"
-#include "net/sock/udp.h"
-#include "net/sock/util.h"
-
 static const uint8_t MSG_ANNOUNCE = 0xD0;
 
 static const uint16_t BST_PORT = 8119;
@@ -83,6 +75,7 @@ static void _run_client(void) {
         }
     }
 
+    // TODO
     // Receive pubkey from server
     // Encode symkey
     // Transfer symkey to server

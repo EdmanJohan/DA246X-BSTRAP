@@ -18,7 +18,9 @@
         "util.h": "c",
         "tcp.h": "c",
         "addr.h": "c",
-        "errno.h": "c"
+        "errno.h": "c",
+        "atmega256rfr2.h": "c",
+        "eeprom.h": "c"
     },
     "cmake.configureOnOpen": false
 }

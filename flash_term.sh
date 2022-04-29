@@ -73,9 +73,9 @@ if [ "$board" == "avr-rss2" ]; then
 fi
 
 if [ -z "$clean" ] || [ "$clean" == "false" ]; then
-    BOARD=$board make all flash -C $application PORT=$port -j$NPROC DEBUG_LOGGING=$debug
+    BOARD=$board make all flash -C $application PORT=$port -j$NPROC ENABLE_DEBUG=$debug
 else
-    BOARD=$board make clean all flash -C $application PORT=$port -j$NPROC DEBUG_LOGGING=$debug
+    BOARD=$board make clean all flash -C $application PORT=$port -j$NPROC ENABLE_DEBUG=$debug
 fi
 
 if [ "$terminal" != "true" ] && [ "$terminal" != "yes" ] && [ "$terminal" != "1" ]; then
@@ -98,7 +98,7 @@ if [ "$terminal" == "true" ] || [ "$terminal" == "yes" ] || [ "$terminal" == "1"
             minicom ttyUSB1
         fi
     elif [ "$board" == "native" ]; then
-        BOARD=$board make term -C $application PORT=$port DEBUG_LOGGING=$debug
+        BOARD=$board make term -C $application PORT=$port ENABLE_DEBUG=$debug
     else
         exit;
     fi
