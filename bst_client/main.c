@@ -26,14 +26,7 @@ char line_buf[SHELL_DEFAULT_BUFSIZE];
 
 static char client_stack[THREAD_STACKSIZE_MAIN];
 
-int main(void) {
-    msg_init_queue(_main_msg_queue, MAIN_QUEUE_SIZE);
-    puts("DA246X Bootstrapper | CLIENT");
-
-    print_hw_addr();  // Print HW Addr
-    print_ip_addr();  // Print IP Addr
-
-    eeprom_init();  // Init
+void encr_init(void) {
     uint32_t reg_addr;
     if (eeprom_read_entry(ENT1_NAME, ENT1_SIZE, &reg_addr) == 1) {
         gen_aes_key((uint8_t*)AES_KEY_BUF, SYM_KEY_SIZE);
@@ -50,6 +43,17 @@ int main(void) {
 #endif
         puts("[EEPROM] Read AES-KEY from EEPROM.\n");
     }
+}
+
+int main(void) {
+    msg_init_queue(_main_msg_queue, MAIN_QUEUE_SIZE);
+    puts("DA246X Bootstrapper | CLIENT");
+
+    print_hw_addr();  // Print HW Addr
+    print_ip_addr();  // Print IP Addr
+
+    eeprom_init();  // Init EEPROM
+    encr_init();    // Initalize/Read AES key to buffer.
 
     // TODO: If not, then generate symmetric key and save
 
