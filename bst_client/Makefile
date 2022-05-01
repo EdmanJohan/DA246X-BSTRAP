@@ -35,7 +35,7 @@ USEMODULE += eepreg
 
 # Crypto Modules
 USEPKG += c25519
-USEPKG += libb2
+USEMODULE += hashes
 
 CFLAGS += -DLOG_LEVEL=LOG_NONE
 

@@ -33,7 +33,7 @@ static msg_t server_msg_queue[QUEUE_SIZE];
 static sock_tcp_t sock_queue[SOCK_QUEUE_LEN];
 
 extern struct curve_params cparms;
-extern const char AES_KEY_BUF[SYMMETRIC_KEY_BYTES];
+extern unsigned char AES_KEY_BUF[SYMMETRIC_KEY_BYTES];
 
 static void* _announce(void* arg) {
     (void)arg;
@@ -174,6 +174,25 @@ static void* _server_thread(void* arg) {
 #else
             printf("Done. \n");
 #endif
+
+            printf("[SHA3] Calculating hash ... ");
+            static unsigned char hash[SHA3_256_DIGEST_LENGTH];
+            keccak_state_t state;
+
+            sha3_256_init(&state);
+            sha3_update(&state, cparms.r, sizeof(cparms.r));
+            sha3_256_final(&state, hash);
+
+            memcpy(AES_KEY_BUF, hash, sizeof(AES_KEY_BUF));
+
+#ifdef DEBUG_LOG
+            printf("\n[AES-128] ");
+            for (unsigned int i = 0; i < sizeof(AES_KEY_BUF); i++)
+                printf("%02x ", AES_KEY_BUF[i]);
+            printf("\n");
+#endif
+
+            printf("[SHA3] Done.\n");
         }
     }
 

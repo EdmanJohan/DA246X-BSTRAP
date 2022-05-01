@@ -28,7 +28,12 @@
         "bst_server.h": "c",
         "at24mac_params.h": "c",
         "entropy_source.h": "c",
-        "adc.h": "c"
+        "adc.h": "c",
+        "blake2.h": "c",
+        "embunit.h": "c",
+        "sha3.h": "c",
+        "sock.h": "c",
+        "random.h": "c"
     },
     "cmake.configureOnOpen": false
 }

@@ -15,7 +15,7 @@
 #define MAIN_QUEUE_SIZE (8)
 
 struct curve_params cparms;
-const char AES_KEY_BUF[SYMMETRIC_KEY_BYTES];
+unsigned char AES_KEY_BUF[SYMMETRIC_KEY_BYTES];
 
 static msg_t _main_msg_queue[MAIN_QUEUE_SIZE];
 

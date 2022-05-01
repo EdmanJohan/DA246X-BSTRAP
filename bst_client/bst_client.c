@@ -22,7 +22,7 @@ static const uint16_t MULTICAST_PORT = 8561;
 static char SERVER_ADDR[IPV6_ADDR_MAX_STR_LEN];
 
 extern struct curve_params cparms;
-extern const char AES_KEY_BUF[SYMMETRIC_KEY_BYTES];
+extern unsigned char AES_KEY_BUF[SYMMETRIC_KEY_BYTES];
 
 static int _find_server(void) {
     /* Await broadcast from server. */
@@ -64,7 +64,7 @@ static int _find_server(void) {
     return 0;
 }
 
-static void _run_client(void) {
+static void _exchange_keys(void) {
     uint8_t buf[128];
     sock_tcp_ep_t remote = SOCK_IPV6_EP_ANY;
     sock_tcp_t sock;
@@ -127,14 +127,38 @@ static void _run_client(void) {
     for (unsigned int i = 0; i < sizeof(cparms.r); i++)
         printf("%02x ", cparms.r[i]);
     printf("\n");
+#else
+    printf("Done. \n");
 #endif
+}
+
+void _hash_secret_key(void) {
+    printf("[SHA3] Calculating hash ... ");
+    static unsigned char hash[SHA3_256_DIGEST_LENGTH];
+    keccak_state_t state;
+
+    sha3_256_init(&state);
+    sha3_update(&state, cparms.r, sizeof(cparms.r));
+    sha3_256_final(&state, hash);
+
+    memcpy(AES_KEY_BUF, hash, sizeof(AES_KEY_BUF));
+
+#ifdef DEBUG_LOG
+    printf("\n[AES-128] ");
+    for (unsigned int i = 0; i < sizeof(AES_KEY_BUF); i++)
+        printf("%02x ", AES_KEY_BUF[i]);
+    printf("\n");
+#endif
+
+    printf("[SHA3] Done.\n");
 }
 
 void *bst_client(void *arg) {
     (void)arg;
 
     _find_server();
-    _run_client();
+    _exchange_keys();
+    _hash_secret_key();
 
     return 0;
 }

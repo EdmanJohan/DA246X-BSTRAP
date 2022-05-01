@@ -34,7 +34,7 @@ USEMODULE += auto_init_gnrc_rpl
 
 # Crypto Modules
 USEPKG += c25519
-USEPKG += libb2
+USEMODULE += hashes
 
 # Optional modules
 USEMODULE += shell

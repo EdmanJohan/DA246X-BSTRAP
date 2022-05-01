@@ -15,7 +15,7 @@
 
 #include "include/bst_client.h"
 
-extern char AES_KEY_BUF[SYMMETRIC_KEY_BYTES];
+extern unsigned char AES_KEY_BUF[SYMMETRIC_KEY_BYTES];
 
 void entropy_init(void) {
     // TODO: Improvement: Utilize TRNG as SRAND, featured in Atmega256rfr2 processor.

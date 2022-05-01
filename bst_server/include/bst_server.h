@@ -21,15 +21,13 @@ extern "C" {
 
 #include <stdio.h>
 
-#include "blake2.h"
 #include "c25519.h"
-#include "errno.h"
+#include "hashes/sha3.h"
 #include "msg.h"
-#include "net/sock/tcp.h"
-#include "net/sock/udp.h"
 #include "net/sock/util.h"
 #include "random.h"
 #include "shell.h"
+#include "thread.h"
 #include "xtimer.h"
 
 #ifdef AVR_RSS2

@@ -15,7 +15,7 @@
 #define MAIN_QUEUE_SIZE (8)
 
 struct curve_params cparms;
-char AES_KEY_BUF[SYMMETRIC_KEY_BYTES];
+unsigned char AES_KEY_BUF[SYMMETRIC_KEY_BYTES];
 
 static msg_t _main_msg_queue[MAIN_QUEUE_SIZE];
 static char client_stack[THREAD_STACKSIZE_MAIN];
@@ -39,7 +39,7 @@ int main(void) {
     entropy_init();        // Initialize entropy source
     gen_keypair(&cparms);  // Initialize PubPriv keys
 
-    encr_init();  // Initalize/Read AES key to buffer.
+    // encr_init();  // Initalize/Read AES key to buffer.
 
     // Check if server wants key transfer, otherwise ok to communicate
     thread_create(client_stack, sizeof(client_stack), THREAD_PRIORITY_MAIN - 1,
