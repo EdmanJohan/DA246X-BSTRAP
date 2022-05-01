@@ -9,36 +9,31 @@
  *
  */
 
-#include <stdio.h>
-
-#include "errno.h"
-#include "msg.h"
-#include "net/sock/tcp.h"
-#include "net/sock/udp.h"
-#include "net/sock/util.h"
-#include "xtimer.h"
+#include "include/bst_server.h"
 
 #define SOCK_QUEUE_LEN (1U)
 #define QUEUE_SIZE (2)
 
-static uint8_t CONFIGURED = 0x0u;
 static const uint8_t MSG_ACTION_STOP = 0x1u;
 static const uint8_t MSG_ANNOUNCE = 0xD0;
+// static const uint8_t MSG_DONE = 0xC8;
 
 static const uint16_t BST_PORT = 8119;
-// static uint16_t SBST_PORT = 8819;
 static const uint16_t MULTICAST_PORT = 8561;
 static const char* GLOBAL_ADDR = "2001:db8::1";
 
 static kernel_pid_t announce_pid = KERNEL_PID_UNDEF;
-static char announce_stack[THREAD_STACKSIZE_DEFAULT];
+static char announce_stack[THREAD_STACKSIZE_MEDIUM];
 static msg_t announce_msg_queue[QUEUE_SIZE];
 
 static kernel_pid_t server_main_pid = KERNEL_PID_UNDEF;
-static char server_stack[THREAD_STACKSIZE_DEFAULT + THREAD_EXTRA_STACKSIZE_PRINTF];
+static char server_stack[THREAD_STACKSIZE_LARGE + THREAD_EXTRA_STACKSIZE_PRINTF];
 static msg_t server_msg_queue[QUEUE_SIZE];
 
 static sock_tcp_t sock_queue[SOCK_QUEUE_LEN];
+
+extern struct curve_params cparms;
+extern const char AES_KEY_BUF[SYMMETRIC_KEY_BYTES];
 
 static void* _announce(void* arg) {
     (void)arg;
@@ -81,44 +76,6 @@ static void* _announce(void* arg) {
     return NULL;
 }
 
-static void configure_endpoint(void) {
-    if (CONFIGURED == 0x1) {
-        return;
-    }
-
-    gnrc_netif_t* netif = NULL;
-
-    if (gnrc_netif_numof() == 1) {
-        ipv6_addr_t glob_addr;
-        ipv6_addr_from_str(&glob_addr, GLOBAL_ADDR);
-        netif = gnrc_netif_iter(netif);
-
-        gnrc_netif_ipv6_addr_add(netif, &glob_addr, 64, 0);
-    }
-
-    netif = NULL;
-    uint8_t devNum = 0;
-    while ((netif = gnrc_netif_iter(netif))) {
-        ipv6_addr_t ipv6_addrs[CONFIG_GNRC_NETIF_IPV6_ADDRS_NUMOF];
-        int res = gnrc_netapi_get(netif->pid, NETOPT_IPV6_ADDR, 0, ipv6_addrs, sizeof(ipv6_addrs));
-
-        if (res < 0) {
-            continue;
-        }
-
-        printf("[Server] Addresses on dev%d:\n", devNum);
-        for (unsigned i = 0; i < (unsigned)(res / sizeof(ipv6_addr_t)); i++) {
-            char ipv6_addr[IPV6_ADDR_MAX_STR_LEN];
-
-            ipv6_addr_to_str(ipv6_addr, &ipv6_addrs[i], IPV6_ADDR_MAX_STR_LEN);
-            printf("\t[%u] %s\n", i, ipv6_addr);
-        }
-        devNum++;
-    }
-
-    CONFIGURED = 0x1;
-}
-
 static void* _server_thread(void* arg) {
     (void)arg;
     msg_init_queue(server_msg_queue, QUEUE_SIZE);
@@ -140,6 +97,7 @@ static void* _server_thread(void* arg) {
     printf("[Server] Now listening on %s[:%d]\n", ipv6_addr, lport);
 
     msg_t msg;
+    uint8_t q2[32];
     while (1) {
         sock_tcp_t* sock;
 
@@ -157,36 +115,65 @@ static void* _server_thread(void* arg) {
         int ret_code = 0;
         if ((ret_code = sock_tcp_accept(&queue, &sock, UINT8_MAX)) != 0) {
             if (ret_code != -ETIMEDOUT) {
-                printf("Error accepting tcp connection: %d\n", ret_code);
+                printf("[Server/TCP] Error accepting tcp connection: %d\n", ret_code);
             }
 
         } else {
-            int read_res = 0;
-            puts("[Server] Accepted new client.");
+            int rres = 0;
+            puts("[Server/TCP] Accepted new client.");
 
-            while (read_res >= 0) {
-                read_res = sock_tcp_read(sock, &buf, sizeof(buf), SOCK_NO_TIMEOUT);
+            while (rres >= 0) {
+                rres = sock_tcp_read(sock, &buf, sizeof(buf), SOCK_NO_TIMEOUT);
 
-                if (read_res <= 0) {
-                    printf("[Server] Client disconnected.\n");
+                if (rres <= 0) {
+                    printf("[Server/TCP] Client disconnected.\n");
                     break;
                 } else {
-                    int write_res;
+#ifdef DEBUG_LOG
+                    printf("[Server/TCP] Received: %d bytes\n", rres);
+                    printf("Content: ");
+                    for (int i = 0; i < rres; i++)
+                        printf("%02x ", buf[i]);
+                    printf("\n");
+#endif
 
-                    printf("Read: \"");
-                    for (int i = 0; i < read_res; i++) {
-                        printf("%c", buf[i]);
-                    }
+                    memcpy(&q2, &buf, sizeof(q2));
 
-                    puts("\"");
-                    if ((write_res = sock_tcp_write(sock, &buf, read_res)) < 0) {
-                        puts("Errored on write, finished server loop");
+                    int wres = 0;
+                    if ((wres = sock_tcp_write(sock, cparms.q, sizeof(cparms.q))) < 0) {
+                        puts("[Server/TCP] Errored on write, finished server loop");
                         break;
+                    } else {
+                        printf("[Server/TCP] Wrote %d bytes.\n", wres);
                     }
                 }
             }
 
             sock_tcp_disconnect(sock);
+
+            /* Diffie-Hellman exchange */
+            printf("[DH] Calculating r ... \n");
+            c25519_smult(cparms.r, q2, cparms.e);
+
+#ifdef DEBUG_LOG
+            puts("");
+            printf("[DH] e: ");
+            for (unsigned int i = 0; i < sizeof(cparms.e); i++)
+                printf("%02x ", cparms.e[i]);
+            printf("\n");
+
+            printf("[DH] q2: ");
+            for (unsigned int i = 0; i < sizeof(q2); i++)
+                printf("%02x ", q2[i]);
+            printf("\n");
+
+            printf("[DH] r: ");
+            for (unsigned int i = 0; i < sizeof(cparms.r); i++)
+                printf("%02x ", cparms.r[i]);
+            printf("\n");
+#else
+            printf("Done. \n");
+#endif
         }
     }
 
@@ -205,7 +192,6 @@ static int start_server(char* mode) {
         return 1;
     }
 
-    configure_endpoint();
     announce_pid = thread_create(announce_stack, sizeof(announce_stack), THREAD_PRIORITY_MAIN - 1,
                                  THREAD_CREATE_STACKTEST, _announce, NULL, "bst-server-announce");
 

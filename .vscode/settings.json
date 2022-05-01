@@ -20,7 +20,15 @@
         "addr.h": "c",
         "errno.h": "c",
         "atmega256rfr2.h": "c",
-        "eeprom.h": "c"
+        "eeprom.h": "c",
+        "c25519.h": "c",
+        "*.inc": "c",
+        "adc_noise.h": "c",
+        "utility.h": "c",
+        "bst_server.h": "c",
+        "at24mac_params.h": "c",
+        "entropy_source.h": "c",
+        "adc.h": "c"
     },
     "cmake.configureOnOpen": false
 }

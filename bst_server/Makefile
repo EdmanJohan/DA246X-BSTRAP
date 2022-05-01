@@ -4,8 +4,8 @@ TAP ?= tap0
 RIOTBASE ?= $(CURDIR)/../RIOT
 
 # Shorten default TCP timeouts to speedup testing
-MSL_MS ?= 1000
-TIMEOUT_MS ?= 3000
+MSL_MS ?= 5000
+TIMEOUT_MS ?= 15000
 
 # Enable safety checking for development process, disable in production
 DEVELHELP ?= 1
@@ -27,35 +27,43 @@ USEMODULE += gnrc_sock_udp
 USEMODULE += sock_util
 
 # RPL Modules
-# USEMODULE += gnrc_sixlowpan
+USEMODULE += fib
 USEMODULE += gnrc_rpl
 USEMODULE += auto_init_gnrc_rpl
-USEMODULE += dhcpv6_client_auto_init
+# USEMODULE += dhcpv6_client_auto_init
+
+# Crypto Modules
+USEPKG += c25519
+USEPKG += libb2
 
 # Optional modules
-USEMODULE += gnrc_icmpv6_echo
 USEMODULE += shell
 USEMODULE += shell_commands
-USEMODULE += ps
-
-USEMODULE += fib
 
 CFLAGS += -DLOG_LEVEL=LOG_NONE
 CFLAGS += -DCONFIG_GNRC_IPV6_NIB_ARSM=1
 CFLAGS += -DCONFIG_GNRC_IPV6_NIB_SLAAC=1
 CFLAGS += -DCONFIG_GNRC_IPV6_NIB_NO_RTR_SOL=0
 CFLAGS += -DLOG_LEVEL=LOG_NONE
-# CFLAGS += -DCONFIG_GNRC_NETIF_IPV6_ADDRS_NUMOF=6 \
-          -DGNRC_NETIF_IPV6_GROUPS_NUMOF=6
+
+CFLAGS += '-DTHREAD_STACKSIZE_MAIN=(THREAD_STACKSIZE_DEFAULT + 1024)'
+CFLAGS += -DCONFIG_ENTROPY_SOURCE_ADC_HMIN=65536
 
 ifeq ($(BOARD),avr-rss2)
     CFLAGS += -DAVR_RSS2
     USEMODULE += gnrc_sixlowpan
     USEMODULE += gnrc_sixlowpan_border_router_default
+
+    # ADC Entropy
+    USEMODULE += fmt
+    USEMODULE += entropy_source_adc_noise
 endif
 
 ifeq ($(ENABLE_DEBUG),true)
     CFLAGS += -DDEBUG_LOG
+    USEMODULE += od
+    USEMODULE += ps
+    USEMODULE += gnrc_icmpv6_echo
 endif
 
 # Enable/Disable to show compiler invocation lines
