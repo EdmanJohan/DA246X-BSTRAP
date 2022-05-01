@@ -28,7 +28,7 @@ extern "C" {
 #include "eepreg.h"
 #include "inttypes.h"
 #include "msg.h"
-// #include "net/af.h"
+#include "net/af.h"
 #include "net/gnrc.h"
 #include "net/gnrc/netif.h"
 #include "net/ipv6/addr.h"
