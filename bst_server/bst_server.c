@@ -11,16 +11,10 @@
 
 #include "include/bst_server.h"
 
+#include "include/configs.h"
+
 #define SOCK_QUEUE_LEN (1U)
 #define QUEUE_SIZE (2)
-
-static const uint8_t MSG_ACTION_STOP = 0x1u;
-static const uint8_t MSG_ANNOUNCE = 0xD0;
-// static const uint8_t MSG_DONE = 0xC8;
-
-static const uint16_t BST_PORT = 8119;
-static const uint16_t MULTICAST_PORT = 8561;
-static const char* GLOBAL_ADDR = "2001:db8::1";
 
 static kernel_pid_t announce_pid = KERNEL_PID_UNDEF;
 static char announce_stack[THREAD_STACKSIZE_MEDIUM];
@@ -76,7 +70,7 @@ static void* _announce(void* arg) {
     return NULL;
 }
 
-static void* _server_thread(void* arg) {
+static void* _server_encrypted_thread(void* arg) {
     (void)arg;
     msg_init_queue(server_msg_queue, QUEUE_SIZE);
 
@@ -192,7 +186,7 @@ static void* _server_thread(void* arg) {
             printf("\n");
 #endif
 
-            printf("[SHA3] Done.\n");
+            printf(" Done.\n");
         }
     }
 
@@ -211,13 +205,21 @@ static int start_server(char* mode) {
         return 1;
     }
 
-    announce_pid = thread_create(announce_stack, sizeof(announce_stack), THREAD_PRIORITY_MAIN - 1,
-                                 THREAD_CREATE_STACKTEST, _announce, NULL, "bst-server-announce");
+    if (strcmp(mode, "encrypted") == 0) {
+        announce_pid = thread_create(announce_stack, sizeof(announce_stack), THREAD_PRIORITY_MAIN - 1,
+                                     THREAD_CREATE_STACKTEST, _announce, NULL, "bst-server-announce");
 
-    server_main_pid = thread_create(server_stack, sizeof(server_stack), THREAD_PRIORITY_MAIN - 2,
-                                    THREAD_CREATE_STACKTEST, _server_thread, NULL, "bst-server");
+        server_main_pid = thread_create(server_stack, sizeof(server_stack), THREAD_PRIORITY_MAIN - 2,
+                                        THREAD_CREATE_STACKTEST, _server_encrypted_thread, NULL, "bst-server-encrypted");
+        return 0;
+    }
 
-    return 0;
+    if (strcmp(mode, "plain") == 0) {
+        printf("Error: Not implemented.\n");
+        return 1;
+    }
+
+    return 1;
 }
 
 static void stop_server(void) {
@@ -264,9 +266,8 @@ int bst_cmd(int argc, char** argv) {
             return 1;
         }
 
-        if (strcmp(argv[1], "start") == 0) {
-            start_server(argv[2]);
-        }
+        start_server(argv[2]);
+
     } else if (strcmp(argv[1], "stop") == 0) {
         stop_server();
     } else {

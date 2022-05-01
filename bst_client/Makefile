@@ -36,6 +36,8 @@ USEMODULE += eepreg
 # Crypto Modules
 USEPKG += c25519
 USEMODULE += hashes
+USEMODULE += cipher_modes
+USEMODULE += crypto_aes_128
 
 CFLAGS += -DLOG_LEVEL=LOG_NONE
 
@@ -44,6 +46,8 @@ CFLAGS += -DCONFIG_ENTROPY_SOURCE_ADC_HMIN=65536
 
 ifeq ($(BOARD),avr-rss2)
     CFLAGS += -DAVR_RSS2
+
+    # Specific AVR modules
     USEMODULE += gnrc_sixlowpan
 
     # ADC Entropy

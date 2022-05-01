@@ -17,7 +17,7 @@ extern "C" {
 #endif
 
 void entropy_init(void);
-void gen_keypair(struct curve_params *cparms);
+void gen_keypair(struct curve_params* cparms);
 void configure_endpoint(void);
 
 #ifdef __cplusplus

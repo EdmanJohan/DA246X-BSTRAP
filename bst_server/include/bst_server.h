@@ -20,10 +20,15 @@ extern "C" {
 #define SYMMETRIC_KEY_BYTES (16U)
 
 #include <stdio.h>
+#include <string.h>
 
 #include "c25519.h"
+#include "crypto/ciphers.h"
+#include "crypto/modes/cbc.h"
 #include "hashes/sha3.h"
 #include "msg.h"
+#include "net/sock/tcp.h"
+#include "net/sock/udp.h"
 #include "net/sock/util.h"
 #include "random.h"
 #include "shell.h"

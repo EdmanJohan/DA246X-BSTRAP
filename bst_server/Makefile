@@ -35,6 +35,8 @@ USEMODULE += auto_init_gnrc_rpl
 # Crypto Modules
 USEPKG += c25519
 USEMODULE += hashes
+USEMODULE += cipher_modes
+USEMODULE += crypto_aes_128
 
 # Optional modules
 USEMODULE += shell

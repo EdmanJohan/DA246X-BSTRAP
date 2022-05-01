@@ -11,13 +11,15 @@
 
 #include "include/bst_client.h"
 
+#include "crypto/ciphers.h"
+#include "crypto/modes/cbc.h"
 #include "include/utility.h"
 
 static const uint8_t MSG_ANNOUNCE = 0xD0;
-// static const uint8_t MSG_DONE = 0xC8;
 
 static const uint16_t BST_PORT = 8119;
 static const uint16_t MULTICAST_PORT = 8561;
+static const uint16_t DATA_PORT = 8889;
 
 static char SERVER_ADDR[IPV6_ADDR_MAX_STR_LEN];
 
@@ -150,7 +152,95 @@ void _hash_secret_key(void) {
     printf("\n");
 #endif
 
-    printf("[SHA3] Done.\n");
+    printf(" Done.\n");
+}
+
+int _send_data(void) {
+    cipher_t cipher;
+    char *PLAIN_MESSAGE = "Wow very encrypt!";
+    int msg_len = 18;
+
+    if (cipher_init(&cipher, CIPHER_AES, AES_KEY_BUF, sizeof(AES_KEY_BUF)) != 1) {
+        printf("[Client/UDPS] Error initalizing AES.\n");
+    }
+
+    sock_udp_ep_t local = SOCK_IPV6_EP_ANY;
+    sock_udp_t sock;
+    local.port = 0xabcd;
+
+    if (sock_udp_create(&sock, &local, NULL, 0) < 0) {
+        puts("Error creating UDP sock");
+        return 1;
+    }
+
+    uint8_t buf[128];
+    uint8_t iv_vector[16];
+    uint8_t data[64];
+    while (1) {
+        sock_udp_ep_t remote = {.family = AF_INET6};
+        ssize_t res;
+
+        remote.port = DATA_PORT;
+        ipv6_addr_set_all_nodes_multicast((ipv6_addr_t *)&remote.addr.ipv6, IPV6_ADDR_MCAST_SCP_LINK_LOCAL);
+
+        uint8_t PLAIN_TEXT[64];
+        memcpy(PLAIN_TEXT, PLAIN_MESSAGE, msg_len);
+        for (unsigned i = msg_len; i < sizeof(PLAIN_TEXT); i++) {
+            PLAIN_TEXT[i] = '\0';
+        }
+
+        random_bytes(iv_vector, sizeof(iv_vector));
+        if (cipher_encrypt_cbc(&cipher, iv_vector, PLAIN_TEXT, sizeof(PLAIN_TEXT), data) < 0) {
+            printf("[Client/UDPS] Error encrypting data. \n");
+        }
+
+        uint8_t payload[64 + 16];
+        memcpy(payload, iv_vector, sizeof(iv_vector));
+        memcpy(payload + 16, data, sizeof(data));
+
+        if (sock_udp_send(&sock, payload, sizeof(payload), &remote) < 0) {
+            puts("[Client/UDPS] Error sending message");
+            sock_udp_close(&sock);
+            return 1;
+        } else {
+            puts("[Client/UDPS] Sent message.");
+        }
+
+        if ((res = sock_udp_recv(&sock, buf, sizeof(buf), 1 * US_PER_SEC, NULL)) < 0) {
+            if (res != -ETIMEDOUT) {
+                puts("[Client/UDPS] Error receiving message");
+            }
+        } else {
+            printf("[Client/UDPS] Received message (%d bytes). \n", res);
+
+#ifdef DEBUG_LOG
+            for (int i = 0; i < res; i++) {
+                printf("%02X ", buf[i]);
+            }
+            printf("\n");
+#endif
+
+            memcpy(iv_vector, buf, sizeof(iv_vector));
+            memcpy(data, buf + 16, sizeof(data));
+
+            uint8_t decoded_data[sizeof(data)];
+            if (cipher_decrypt_cbc(&cipher, iv_vector, data, sizeof(data), decoded_data) < 0) {
+                printf("[Server/UDPS] Failed to decrypt data.\n");
+            }
+
+            char plain_text[res];
+            memcpy(plain_text, decoded_data, sizeof(decoded_data));
+            printf("[Server/UDPS] Received message (decrypted): ");
+            for (unsigned i = 0; i < strlen(plain_text); ++i) {
+                printf("%c", plain_text[i]);
+            }
+            puts("\n");
+        }
+
+        xtimer_sleep(10);
+    }
+
+    return 0;
 }
 
 void *bst_client(void *arg) {
@@ -159,6 +249,7 @@ void *bst_client(void *arg) {
     _find_server();
     _exchange_keys();
     _hash_secret_key();
+    _send_data();
 
     return 0;
 }
