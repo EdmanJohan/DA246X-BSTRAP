@@ -1,3 +1,9 @@
+bst-server
+159850 bytes
+
+bst-client
+108122 bytes
+
 // Generate PubPriv keypair
 run, time (server), time (client)
 1, 23952, 22576
