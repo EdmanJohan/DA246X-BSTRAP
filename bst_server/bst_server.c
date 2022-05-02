@@ -146,8 +146,10 @@ static void* _server_encrypted_thread(void* arg) {
             sock_tcp_disconnect(sock);
 
             /* Diffie-Hellman exchange */
-            printf("[DH] Calculating r ... \n");
+            printf("[DH] Calculating r ... ");
+            uint32_t start = xtimer_now_usec();
             c25519_smult(cparms.r, q2, cparms.e);
+            uint32_t end = xtimer_now_usec();
 
 #ifdef DEBUG_LOG
             puts("");
@@ -165,17 +167,18 @@ static void* _server_encrypted_thread(void* arg) {
             for (unsigned int i = 0; i < sizeof(cparms.r); i++)
                 printf("%02x ", cparms.r[i]);
             printf("\n");
-#else
-            printf("Done. \n");
 #endif
+            printf("Done. Took %u us\n", (end - start));
 
             printf("[SHA3] Calculating hash ... ");
             static unsigned char hash[SHA3_256_DIGEST_LENGTH];
             keccak_state_t state;
 
+            start = xtimer_now_usec();
             sha3_256_init(&state);
             sha3_update(&state, cparms.r, sizeof(cparms.r));
             sha3_256_final(&state, hash);
+            end = xtimer_now_usec();
 
             memcpy(AES_KEY_BUF, hash, sizeof(AES_KEY_BUF));
 
@@ -186,7 +189,7 @@ static void* _server_encrypted_thread(void* arg) {
             printf("\n");
 #endif
 
-            printf(" Done.\n");
+            printf(" Done. Took %u us\n", (end - start));
         }
     }
 

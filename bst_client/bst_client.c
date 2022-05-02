@@ -111,10 +111,13 @@ static void _exchange_keys(void) {
     sock_tcp_disconnect(&sock);
 
     /* Diffie-Hellman exchange */
-    printf("[DH] Calculating r ... \n");
+    printf("[DH] Calculating r ... ");
+    uint32_t start = xtimer_now_usec();
     c25519_smult(cparms.r, q2, cparms.e);
+    uint32_t end = xtimer_now_usec();
 
 #ifdef DEBUG_LOG
+    puts("");
     printf("[DH] e: ");
     for (unsigned int i = 0; i < sizeof(cparms.e); i++)
         printf("%02x ", cparms.e[i]);
@@ -129,19 +132,21 @@ static void _exchange_keys(void) {
     for (unsigned int i = 0; i < sizeof(cparms.r); i++)
         printf("%02x ", cparms.r[i]);
     printf("\n");
-#else
-    printf("Done. \n");
 #endif
+    printf("Done. Took %u us\n", (end - start));
 }
 
 void _hash_secret_key(void) {
     printf("[SHA3] Calculating hash ... ");
+
     static unsigned char hash[SHA3_256_DIGEST_LENGTH];
     keccak_state_t state;
 
+    uint32_t start = xtimer_now_usec();
     sha3_256_init(&state);
     sha3_update(&state, cparms.r, sizeof(cparms.r));
     sha3_256_final(&state, hash);
+    uint32_t end = xtimer_now_usec();
 
     memcpy(AES_KEY_BUF, hash, sizeof(AES_KEY_BUF));
 
@@ -152,7 +157,7 @@ void _hash_secret_key(void) {
     printf("\n");
 #endif
 
-    printf(" Done.\n");
+    printf("Done. Took %u us\n", (end - start));
 }
 
 int _send_data(void) {

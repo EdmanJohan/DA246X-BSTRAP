@@ -1,0 +1,90 @@
+// Generate PubPriv keypair
+run, time (server), time (client)
+1, 23952, 22576
+2, 18496, 22576
+3, 23952, 22576
+4, 23952, 22576
+5, 23952, 22576
+
+
+// Calculate r
+run, time (server), time (client)
+1, 18944, 25728
+2, 21648, 29856
+3, 21664, 24928
+4, 18944, 27376
+5, 18928, 25664
+
+// Calculate SHA3-256 hash
+run, time (server), time (client)
+1, 8176, 8176
+2, 8176, 8224
+3, 8176, 8160
+4, 8176, 8160
+5, 8176, 8176
+
+// Link statistics (w/o RPL)
+> ping6 -c 10 fe80::fec2:3d00:1:856e
+12 bytes from fe80::fec2:3d00:1:856e: icmp_seq=0 ttl=64 rssi=-38 dBm time=9.760 ms
+12 bytes from fe80::fec2:3d00:1:856e: icmp_seq=1 ttl=64 rssi=-38 dBm time=10.688 ms
+12 bytes from fe80::fec2:3d00:1:856e: icmp_seq=2 ttl=64 rssi=-39 dBm time=9.424 ms
+12 bytes from fe80::fec2:3d00:1:856e: icmp_seq=3 ttl=64 rssi=-38 dBm time=11.328 ms
+12 bytes from fe80::fec2:3d00:1:856e: icmp_seq=4 ttl=64 rssi=-39 dBm time=10.384 ms
+12 bytes from fe80::fec2:3d00:1:856e: icmp_seq=5 ttl=64 rssi=-39 dBm time=12.608 ms
+12 bytes from fe80::fec2:3d00:1:856e: icmp_seq=6 ttl=64 rssi=-39 dBm time=10.704 ms
+12 bytes from fe80::fec2:3d00:1:856e: icmp_seq=7 ttl=64 rssi=-39 dBm time=9.744 ms
+12 bytes from fe80::fec2:3d00:1:856e: icmp_seq=8 ttl=64 rssi=-39 dBm time=11.328 ms
+12 bytes from fe80::fec2:3d00:1:856e: icmp_seq=9 ttl=64 rssi=-39 dBm time=10.688 ms
+
+--- fe80::fec2:3d00:1:856e PING statistics ---
+10 packets transmitted, 10 packets received, 0% packet loss
+round-trip min/avg/max = 9.424/10.665/12.608 ms
+
+> ping6 -c 10 fe80::fec2:3d00:1:8263
+12 bytes from fe80::fec2:3d00:1:8263: icmp_seq=0 ttl=64 rssi=-36 dBm time=10.672 ms
+12 bytes from fe80::fec2:3d00:1:8263: icmp_seq=1 ttl=64 rssi=-36 dBm time=11.312 ms
+12 bytes from fe80::fec2:3d00:1:8263: icmp_seq=2 ttl=64 rssi=-36 dBm time=12.592 ms
+12 bytes from fe80::fec2:3d00:1:8263: icmp_seq=3 ttl=64 rssi=-36 dBm time=10.992 ms
+12 bytes from fe80::fec2:3d00:1:8263: icmp_seq=4 ttl=64 rssi=-36 dBm time=11.632 ms
+12 bytes from fe80::fec2:3d00:1:8263: icmp_seq=5 ttl=64 rssi=-36 dBm time=9.408 ms
+12 bytes from fe80::fec2:3d00:1:8263: icmp_seq=6 ttl=64 rssi=-36 dBm time=12.592 ms
+12 bytes from fe80::fec2:3d00:1:8263: icmp_seq=7 ttl=64 rssi=-36 dBm time=9.408 ms
+12 bytes from fe80::fec2:3d00:1:8263: icmp_seq=8 ttl=64 rssi=-36 dBm time=8.768 ms
+12 bytes from fe80::fec2:3d00:1:8263: icmp_seq=9 ttl=64 rssi=-36 dBm time=11.632 ms
+
+--- fe80::fec2:3d00:1:8263 PING statistics ---
+10 packets transmitted, 10 packets received, 0% packet loss
+round-trip min/avg/max = 8.768/10.900/12.592 ms
+
+// Link statistics (w. RPL)
+> ping6 -c 10 2001:db8::fec2:3d00:1:856e
+12 bytes from 2001:db8::fec2:3d00:1:856e: icmp_seq=0 ttl=64 rssi=-39 dBm time=14.000 ms
+12 bytes from 2001:db8::fec2:3d00:1:856e: icmp_seq=1 ttl=64 rssi=-39 dBm time=13.360 ms
+12 bytes from 2001:db8::fec2:3d00:1:856e: icmp_seq=2 ttl=64 rssi=-39 dBm time=12.720 ms
+12 bytes from 2001:db8::fec2:3d00:1:856e: icmp_seq=3 ttl=64 rssi=-39 dBm time=11.760 ms
+12 bytes from 2001:db8::fec2:3d00:1:856e: icmp_seq=4 ttl=64 rssi=-39 dBm time=12.720 ms
+12 bytes from 2001:db8::fec2:3d00:1:856e: icmp_seq=5 ttl=64 rssi=-39 dBm time=13.040 ms
+12 bytes from 2001:db8::fec2:3d00:1:856e: icmp_seq=6 ttl=64 rssi=-39 dBm time=11.760 ms
+12 bytes from 2001:db8::fec2:3d00:1:856e: icmp_seq=7 ttl=64 rssi=-39 dBm time=13.040 ms
+12 bytes from 2001:db8::fec2:3d00:1:856e: icmp_seq=8 ttl=64 rssi=-39 dBm time=15.280 ms
+12 bytes from 2001:db8::fec2:3d00:1:856e: icmp_seq=9 ttl=64 rssi=-39 dBm time=14.960 ms
+
+--- fe80::fec2:3d00:1:856e PING statistics ---
+10 packets transmitted, 10 packets received, 0% packet loss
+round-trip min/avg/max = 9.424/10.665/12.608 ms
+
+> ping6 -c 10 2001:db8::1
+12 bytes from 2001:db8::1: icmp_seq=0 ttl=64 rssi=-36 dBm time=11.120 ms
+12 bytes from 2001:db8::1: icmp_seq=1 ttl=64 rssi=-36 dBm time=12.400 ms
+12 bytes from 2001:db8::1: icmp_seq=2 ttl=64 rssi=-36 dBm time=12.400 ms
+12 bytes from 2001:db8::1: icmp_seq=3 ttl=64 rssi=-36 dBm time=11.136 ms
+12 bytes from 2001:db8::1: icmp_seq=4 ttl=64 rssi=-36 dBm time=11.440 ms
+12 bytes from 2001:db8::1: icmp_seq=5 ttl=64 rssi=-36 dBm time=14.944 ms
+12 bytes from 2001:db8::1: icmp_seq=6 ttl=64 rssi=-36 dBm time=14.944 ms
+12 bytes from 2001:db8::1: icmp_seq=7 ttl=64 rssi=-36 dBm time=11.744 ms
+12 bytes from 2001:db8::1: icmp_seq=8 ttl=64 rssi=-36 dBm time=11.744 ms
+12 bytes from 2001:db8::1: icmp_seq=9 ttl=64 rssi=-36 dBm time=13.008 ms
+
+--- 2001:db8::1 PING statistics ---
+10 packets transmitted, 10 packets received, 0% packet loss
+round-trip min/avg/max = 11.120/12.488/14.944 ms
