@@ -47,7 +47,8 @@ extern "C" {
 #include "od.h"
 #endif
 
-extern void *BST_SERVER(void *arg);
+extern void *
+BST_SERVER(void *arg);
 
 struct curve_params {
     uint8_t q[EXPONENT_SIZE];

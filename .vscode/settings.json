@@ -36,7 +36,8 @@
         "random.h": "c",
         "configs.h": "c",
         "aes.h": "c",
-        "ciphers.h": "c"
+        "ciphers.h": "c",
+        "benchmark.h": "c"
     },
     "cmake.configureOnOpen": false
 }

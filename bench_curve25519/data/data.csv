@@ -1,0 +1,6 @@
+function name, total time (μs), per call (μs), calls per sec
+random, 16592, 1659.200, 602
+c5519_prepare, 64, 6.400, 156250
+c25519_smult pubkey, 262965616, 26296561.600, 0
+c25519_smult DH, 262965664, 26296566.400, 0
+complete exchange, 525947776, 52594777.600, 0
