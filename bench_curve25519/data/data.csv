@@ -1,6 +1,7 @@
-function name, total time (μs), per call (μs), calls per sec
-random, 16592, 1659.200, 602
-c5519_prepare, 64, 6.400, 156250
-c25519_smult pubkey, 262965616, 26296561.600, 0
-c25519_smult DH, 262965664, 26296566.400, 0
-complete exchange, 525947776, 52594777.600, 0
+function name, avg time (μs), min time (μs), max time (μs),
+random, 1689.6, 1680, 1696,
+c5519_prepare, 36.8, 32, 48,
+c25519_smult pubkey, 26296596.8, 26296592, 26296640,
+c25519_smult DH, 26296596.8, 26296576, 26296640,
+sha3-256 hashing, 8177.6, 8160, 8224,
+total time, 52603097.6, 52603040, 52603248,

@@ -1,0 +1,24 @@
+random:     16896us  ---  1689.600us per call  ---        591 calls per sec
+Individual times:
+1680, 1680, 1696, 1696, 1696, 1696, 1696, 1680, 1680, 1696,
+
+c5519_prepare:       368us  ---  36.800us per call  ---      27173 calls per sec
+Individual times:
+32, 48, 32, 32, 48, 48, 32, 32, 32, 32,
+
+c25519_smult pubkey: 262965968us  ---  26296596.800us per call  ---          0 calls per sec
+Individual times:
+26296592, 26296592, 26296592, 26296592, 26296592, 26296640, 26296592, 26296592, 26296592, 26296592,
+
+
+c25519_smult DH: 262965968us  ---  26296596.800us per call  ---          0 calls per sec
+Individual times:
+26296640, 26296576, 26296592, 26296592, 26296576, 26296592, 26296592, 26296624, 26296592, 26296592,
+
+sha3-hashing:
+Individual times:
+8176, 8176, 8176, 8224, 8176, 8160, 8176, 8160, 8176, 8176
+
+total run DH exchange: 525948160us  ---  52594816.000us per call  ---          0 calls per sec
+Individual times:
+52594800,   52594848,   52594800,   52594800,   52594800,   52594848,   52594816,   52594800,   52594848,   52594800,

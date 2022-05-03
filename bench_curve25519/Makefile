@@ -9,6 +9,7 @@ DEVELHELP ?= 1
 USEMODULE += ztimer
 USEMODULE += ztimer_usec
 USEMODULE += benchmark
+USEMODULE += hashes
 
 USEPKG += c25519
 
