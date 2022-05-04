@@ -1,0 +1,43 @@
+cff-version: 1.2.0
+title: DA246X Bootstrap
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Johan Edman
+    email: jedma@kth.se
+    affiliation: KTH Royal Institute of Technology
+repository-code: 'https://github.com/EdmanJohan/DA246X-BSTRAP'
+repository: 'https://www.overleaf.com/read/ssddwvcnwfjq'
+abstract: >-
+  The Internet of Things has become an integral part
+  of modern society and continues to grow and evolve
+  each year. They are expected to operate in various
+  conditions and environments, securely transmitting
+  sensor data while keeping costs at a minimum.
+  However, security for the Internet of Things is
+  still in its infancy. While there are several
+  schemes and protocols for securing communication
+  over insecure channels, they are often deemed too
+  costly to perform on these constrained devices. As
+  a result, substantial effort has been put into
+  developing secure protocols and adapting existing
+  ones to be lightweight enough. However, what
+  remains seemingly absent in protocol specifications
+  and key management schemes, is how to secure the
+  initial communication. While it is possible to use
+  pre-shared keys, such solutions are problematic
+  with security and management overhead in mind.
+  Especially as networks grow in scale and require
+  autonomous deployment which is at the core of the
+  Internet of Things. By performing a review and
+  evaluation of proposed bootstrapping techniques,
+  this work aims to provide an overview of the
+  different approaches, and their trade-offs, which
+  are realistic to use in different scenarios.
+keywords:
+  - 'internet of things,'
+  - ' secure communication'
+  - bootstrapping networks
+license: MIT

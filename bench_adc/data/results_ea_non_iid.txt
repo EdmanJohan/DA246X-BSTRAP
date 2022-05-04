@@ -1,0 +1,49 @@
+```sh
+./ea_non_iid -i -a -v ../bin/adc/avr-adc-c-0.0_1445-0046.cap 8
+H_original: 2.907274
+H_bitstring: 0.265314
+min(H_original, 8 X H_bitstring): 2.122511
+```
+
+```sh
+./ea_non_iid -i -a -v ../bin/adc/avr-adc-c-1.0-1403-1017.cap 8
+H_original: 2.041964
+H_bitstring: 0.267015
+min(H_original, 8 X H_bitstring): 2.041964
+```
+
+```sh
+# Looks IID
+./ea_non_iid -i -a -v ../bin/adc/avr-adc-nc-0.0_0757-0857.cap 8
+H_original: 0.000705
+H_bitstring: 0.000150
+min(H_original, 7 X H_bitstring): 0.000705
+```
+
+```sh
+./ea_non_iid -i -a -v ../bin/adc/avr-adc-nc-0.0.cap 8
+H_original: 0.002247
+H_bitstring: 0.000340
+min(H_original, 8 X H_bitstring): 0.002247
+```
+
+```sh
+./ea_non_iid -i -a -v ../bin/adc/avr-adc-nc-0.1.cap 8
+H_original: 0.024374
+H_bitstring: 0.004166
+min(H_original, 7 X H_bitstring): 0.024374
+```
+
+```sh
+./ea_non_iid -i -a -v ../bin/adc/avr-adc-nc-1.0.cap 8
+H_original: 0.044196
+H_bitstring: 0.006258
+min(H_original, 8 X H_bitstring): 0.044196
+```
+
+```sh
+./ea_non_iid -i -a -v ../bin/adc/avr-adc-nc-1.1.cap 8
+H_original: 0.001913
+H_bitstring: 0.000300
+min(H_original, 8 X H_bitstring): 0.001913
+```
