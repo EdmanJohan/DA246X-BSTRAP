@@ -4,31 +4,6 @@ bst-server
 bst-client
 108122 bytes
 
-// Generate PubPriv keypair
-run, time (server), time (client)
-1, 23952, 22576
-2, 18496, 22576
-3, 23952, 22576
-4, 23952, 22576
-5, 23952, 22576
-
-
-// Calculate r
-run, time (server), time (client)
-1, 18944, 25728
-2, 21648, 29856
-3, 21664, 24928
-4, 18944, 27376
-5, 18928, 25664
-
-// Calculate SHA3-256 hash
-run, time (server), time (client)
-1, 8176, 8176
-2, 8176, 8224
-3, 8176, 8160
-4, 8176, 8160
-5, 8176, 8176
-
 // Link statistics (w/o RPL)
 > ping6 -c 10 fe80::fec2:3d00:1:856e
 12 bytes from fe80::fec2:3d00:1:856e: icmp_seq=0 ttl=64 rssi=-38 dBm time=9.760 ms
