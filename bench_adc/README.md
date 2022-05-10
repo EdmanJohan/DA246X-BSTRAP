@@ -65,8 +65,24 @@ and run instead with,
 ```
 
 ### Image Creation
-ImageMagick
-`convert -size 32x32+0 mono:avr-adc-nc-0.0.cap avr-adc-nc-0.0.png`
+Conversion according to:  
+`(Width x Height) = (Bytes * 8) / (Bits-Per-Channel * Channels)`  
+
+RGB (8-bits / 3 channels):  
+`convert -size 577x577+0 -depth 8 RGB:truerand_8bit.bin truerand_8bit-rgb.png`  
+
+Grayscale (8-bits / 1 channel):  
+`convert -size 1000x1000+0 -depth 8 gray:truerand_8bit.bin truerand_8bit-gray.png` 
+
+Mono (1-bit / 1 channel):  
+`convert -size 2824x2824+0 -depth 1 mono:truerand_8bit.bin truerand_8bit-mono.png`
+
+
+ImageMagick  
+`convert -size 2824x2824+0 -depth 1 mono:avr-adc-c-0.0.cap avr-adc-c-0.0-mono.png`  
+`convert -size 577x577+0 -depth 8 RGB:truerand_8bit.bin truerand_8bit.png`  
+`convert -size 32x32+0 mono:avr-adc-nc-0.0.cap avr-adc-nc-0.0.png`  
+`convert -size 32x32+0 mono:avr-adc-nc-0.0.cap -type bilevel -scale 300x avr-adc-nc-0.0.png`  
 
 ## References
 [SP800-90B_EntropyAssessment](https://github.com/usnistgov/SP800-90B_EntropyAssessment)
