@@ -65,7 +65,13 @@ and run instead with,
 ```
 
 ### Image Creation
+Conversion according to:  
+`(Width x Height) = (Bytes * 8) / (Bits-Per-Channel * Channels)`  
+
+
 ImageMagick  
+`convert -size 2824x2824+0 -depth 1 mono:avr-adc-c-0.0.cap avr-adc-c-0.0-mono.png`  
+`convert -size 577x577+0 -depth 8 RGB:truerand_8bit.bin truerand_8bit.png`  
 `convert -size 32x32+0 mono:avr-adc-nc-0.0.cap avr-adc-nc-0.0.png`  
 `convert -size 32x32+0 mono:avr-adc-nc-0.0.cap -type bilevel -scale 300x avr-adc-nc-0.0.png`  
 
