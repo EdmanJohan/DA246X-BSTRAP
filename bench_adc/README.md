@@ -65,8 +65,9 @@ and run instead with,
 ```
 
 ### Image Creation
-ImageMagick
-`convert -size 32x32+0 mono:avr-adc-nc-0.0.cap avr-adc-nc-0.0.png`
+ImageMagick  
+`convert -size 32x32+0 mono:avr-adc-nc-0.0.cap avr-adc-nc-0.0.png`  
+`convert -size 32x32+0 mono:avr-adc-nc-0.0.cap -type bilevel -scale 300x avr-adc-nc-0.0.png`  
 
 ## References
 [SP800-90B_EntropyAssessment](https://github.com/usnistgov/SP800-90B_EntropyAssessment)
