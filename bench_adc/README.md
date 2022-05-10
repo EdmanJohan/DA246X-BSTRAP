@@ -64,9 +64,13 @@ and run instead with,
 ./ea_non_iid avr-adc.bin
 ```
 
+### Image Creation
+ImageMagick
+`convert -size 32x32+0 mono:avr-adc-nc-0.0.cap avr-adc-nc-0.0.png`
+
 ## References
-[SP800-90B_EntropyAssessment](https://github.com/usnistgov/SP800-90B_EntropyAssessment)  
-[NIST Special Publication 800-90B](https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-90B.pdf)  
-[Entropy information theory](https://en.wikipedia.org/wiki/Entropy_(information_theory))  
-[What is entropy?](https://crypto.stackexchange.com/questions/378/what-is-entropy)  
-[Calculating the entropy rate of ADCs](https://electronics.stackexchange.com/questions/404590/calculating-the-entropy-rate-of-adcs)  
+[SP800-90B_EntropyAssessment](https://github.com/usnistgov/SP800-90B_EntropyAssessment)
+[NIST Special Publication 800-90B](https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-90B.pdf)
+[Entropy information theory](https://en.wikipedia.org/wiki/Entropy_(information_theory))
+[What is entropy?](https://crypto.stackexchange.com/questions/378/what-is-entropy)
+[Calculating the entropy rate of ADCs](https://electronics.stackexchange.com/questions/404590/calculating-the-entropy-rate-of-adcs)
