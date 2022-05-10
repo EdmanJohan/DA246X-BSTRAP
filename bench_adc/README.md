@@ -75,7 +75,7 @@ Grayscale (8-bits / 1 channel):
 `convert -size 1000x1000+0 -depth 8 gray:truerand_8bit.bin truerand_8bit-gray.png` 
 
 Mono (1-bit / 1 channel):  
-`convert -size 2824x2824+0 -depth 1 mono:avr-adc-c-0.0.cap truerand_8bit-mono.png`
+`convert -size 2824x2824+0 -depth 1 mono:truerand_8bit.bin truerand_8bit-mono.png`
 
 
 ImageMagick  
