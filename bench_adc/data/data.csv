@@ -1,8 +1,8 @@
 Filename, Bytes, conditioned, Bytes per second (Bps)
 avr-adc-c-0.0, 1006681, true, 27.9
 avr-adc-c-1.0, 1020156 , true, 14.0
-avr-adc-nc-0.0, 1008433, false, 420.2,
-avr-adc-nc-0.1, 1064942, false, 295.8,
-avr-adc-nc-0.2, 1108778, false, 308.0,
-avr-adc-nc-1.0, 1000580, false, 277.9,
-avr-adc-nc-1.1, 1139586, false, 316.6,
+avr-adc-nc-0.0, 1008433, false, 420.2
+avr-adc-nc-0.1, 1064942, false, 295.8
+avr-adc-nc-0.2, 1108778, false, 308.0
+avr-adc-nc-1.0, 1000580, false, 277.9
+avr-adc-nc-1.1, 1139586, false, 316.6

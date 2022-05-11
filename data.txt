@@ -1,8 +1,18 @@
-bst-server
-159850 bytes
+bst_client/bin/avr-rss2/bst_clientice.elf
+  text    data     bss     dec     hex filename
+104022    4100   10589  118711   1cfb7 bst_client/bin/avr-rss2/bst_clientice.elf
 
-bst-client
-108122 bytes
+SRAM = data + bss = 4100 + 10589 = 14689 bytes / 32K Bytes SRAM = 0.459
+FLASH = text + data = 104022 + 4100 = 108122 bytes / 256 KB = 0.422
+
+bst_server/bin/avr-rss2/bst_server.elf
+  text    data     bss     dec     hex filename 
+142340   14022   14834  171196   29cbc bst_server/bin/avr-rss2/bst_server.elf
+
+SRAM = data + bss = 14022 + 14834 = 28856 bytes / 32K Bytes SRAM = 0.902
+FLASH = text + data = 142340 + 14022 = 156362 bytes / 256 KB = 0.611
+
+--------------------------------------------------------------------
 
 // Link statistics (w/o RPL)
 > ping6 -c 10 fe80::fec2:3d00:1:856e

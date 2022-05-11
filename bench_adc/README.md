@@ -84,6 +84,9 @@ ImageMagick
 `convert -size 32x32+0 mono:avr-adc-nc-0.0.cap avr-adc-nc-0.0.png`  
 `convert -size 32x32+0 mono:avr-adc-nc-0.0.cap -type bilevel -scale 300x avr-adc-nc-0.0.png`  
 
+### Plotting
+`CAP=C1.0 && gnuplot plot.gnuplot && epstopdf $CAP-plot.eps && pdfcrop $CAP-plot.pdf && rm -f $CAP-plot.eps && rm -f $CAP-plot.pdf && pdftk $CAP-plot-crop.pdf cat 1-endeast output $CAP-plot-1M.pdf && rm -f $CAP-plot-crop.pdf`
+
 ## References
 [SP800-90B_EntropyAssessment](https://github.com/usnistgov/SP800-90B_EntropyAssessment)
 [NIST Special Publication 800-90B](https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-90B.pdf)
