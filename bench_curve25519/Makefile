@@ -4,7 +4,7 @@ TAP ?= tap0
 RIOTBASE ?= $(CURDIR)/../RIOT
 
 # Enable safety checking for development process, disable in production
-DEVELHELP ?= 1
+DEVELHELP ?= 0
 
 USEMODULE += ztimer
 USEMODULE += ztimer_usec

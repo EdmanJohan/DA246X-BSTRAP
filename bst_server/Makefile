@@ -8,7 +8,7 @@ MSL_MS ?= 5000
 TIMEOUT_MS ?= 15000
 
 # Enable safety checking for development process, disable in production
-DEVELHELP ?= 1
+DEVELHELP ?= 0
 
 # Enable debug logging
 ENABLE_DEBUG ?= false
