@@ -162,7 +162,7 @@ void _hash_secret_key(void) {
 
 int _send_data(void) {
     cipher_t cipher;
-    char *PLAIN_MESSAGE = "Wow very encrypt!";
+    char *PLAIN_MESSAGE = "Ping!            ";
     int msg_len = 18;
 
     if (cipher_init(&cipher, CIPHER_AES, AES_KEY_BUF, sizeof(AES_KEY_BUF)) != 1) {
@@ -230,12 +230,12 @@ int _send_data(void) {
 
             uint8_t decoded_data[sizeof(data)];
             if (cipher_decrypt_cbc(&cipher, iv_vector, data, sizeof(data), decoded_data) < 0) {
-                printf("[Server/UDPS] Failed to decrypt data.\n");
+                printf("[Client/UDPS] Failed to decrypt data.\n");
             }
 
             char plain_text[res];
             memcpy(plain_text, decoded_data, sizeof(decoded_data));
-            printf("[Server/UDPS] Received message (decrypted): ");
+            printf("[Client/UDPS] Received message (decrypted): ");
             for (unsigned i = 0; i < strlen(plain_text); ++i) {
                 printf("%c", plain_text[i]);
             }

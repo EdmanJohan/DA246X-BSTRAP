@@ -40,7 +40,7 @@ static void* _udps_server(void* arg) {
     sock_tcp_ep_fmt(&local, ipv6_addr, &lport);
 
     cipher_t cipher;
-    char* PLAIN_MESSAGE = "Thanks!";
+    char* PLAIN_MESSAGE = "Pong!  ";
     int msg_len = 8;
 
     if (cipher_init(&cipher, CIPHER_AES, AES_KEY_BUF, sizeof(AES_KEY_BUF)) != 1) {
